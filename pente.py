@@ -43,7 +43,7 @@ def show_board(board, boardsize):
         print(row_str)
         
 def quit():
-    print("Program shutting down...")
+    print("\nProgram shutting down...")
     sys.exit()
         
 def point_to_boardloc(point, boardsize):
@@ -59,26 +59,32 @@ def point_to_boardloc(point, boardsize):
     boardloc = boardloc_0 + str(boardloc_1)
     return boardloc
 
-def boardloc_to_coord(boardloc, boardsize):
+def boardloc_to_point(boardloc, boardsize):
     col = boardloc[0:1]
     if not col.isalpha():
-        print("Error: board location syntax incorrect")
+        print("\nError: board location syntax incorrect")
         return "error"
+    col = col.lower()
     row = boardloc[1:]
     if not row.isdigit():
-        print("Error: board location syntax incorrect")
+        print("\nError: board location syntax incorrect")
         return "error"
     row = int(row)
     if row > boardsize:
-        print("Error: board location out of bounds")
+        print("\nError: board location out of bounds")
         return "error"
     cols = "abcdefghijklmnopqrs"
     if col not in cols:
-        print("Error: board location out of bounds")
+        print("\nError: board location out of bounds")
+        return "error"
+    if cols.index(col) > (boardsize - 1):
+        print("\nError: board location out of bounds")
         return "error"
     coord_col = (cols.index(col)) + 1
-    coord = (coord_col, row)
-    return coord
+    point = (((boardsize + 1) * row) + coord_col)
+    return point
+    #coord = (coord_col, row)
+    #return coord
 
 def check_inp_command(command, commandlist):
     if not command[0].isalpha():
@@ -111,10 +117,151 @@ def get_empty_spaces(board, boardsize):
             empty_space_list.append(space)
         count += 1
     return empty_space_list
+
+def play_move(move, board, boardsize, player, opponent):
+    point = boardloc_to_point(move, boardsize)
+    if point == "error":
+        return False, None, None, None
+    # no need to deep check if move legal
+    # every empty space is a legal move
+    # only need to check for capture
+    if board[point] != 0:
+        print("\nError: Illegal move - position already occupied")
+        return False, None, None, None
+    board[point] = player
+    # check for capture
+    # capture can only be in form of O-X-X-O as per rules
+    # need to implement keeping track of number of captures for player
+    capture_status, capture_list, capture_count = capture_check(board, boardsize, player, opponent, point)
+    if capture_status:
+        for i in capture_list:
+            board[i] = 0
+    # check for win
+    # need to implement calling 4 in a row (tessera) and 3 in a row (tria)
+    win_status = check_win(board, boardsize, player, point)
+        
+    return True, capture_status, capture_count, win_status
+
+def check_win(board, boardsize, player, point):
+    win = False
+    # vertical check
+    win = check_win_directions(board, point, win, (boardsize + 1), player)
+    if not win:
+        # horizontal check
+        win = check_win_directions(board, point, win, 1, player)
+        if not win:
+            # diagonal up/left, down/right check
+            win = check_win_directions(board, point, win, (boardsize + 2), player)
+            if not win:
+                # diagonal up/right, down/left check
+                win = check_win_directions(board, point, win, (boardsize), player)
+    return win
+
+def check_win_directions(board, point, found, increment, player):
+    count = 1
+    posi_check = True
+    negi_check = True
+    index1 = point
+    index2 = point
+    while not found:
+        if posi_check:
+            index1 += increment
+            if board[index1] == player:
+                count += 1
+            else:
+                posi_check = False
+        if negi_check:
+            index2 -= increment
+            if board[index2] == player:
+                count += 1
+            else:
+                negi_check = False
+        if count >= 5:
+            found = True
+            return found
+        if not posi_check and not negi_check:
+            return found
+        
+def capture_check_direction(board, index, pos_list, status, increment, player, opponent, mode):
+    if board[index] == opponent:
+        pos1 = index
+        if mode == 1:
+            # positive increment
+            index += increment
+            if board[index] == opponent:
+                pos2 = index
+                index += increment
+                if board[index] == player:
+                    status = True
+                    pos_list.extend(pos1, pos2)
+        else:
+            index -= increment
+            if board[index] == opponent:
+                pos2 = index
+                index -= increment
+                if board[index] == player:
+                    status = True
+                    pos_list.extend(pos1, pos2)
+    return status, pos_list
+
+def capture_check(board, boardsize, player, opponent, point):
+    capture = False
+    capture_list = []
+    count = 0
+    # vertical - check
+    index = point - (boardsize + 1)
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, (boardsize + 1), player, opponent, 2)
+    if capture:
+        count += 1
+    # vertical + check
+    capture = False
+    index = point + (boardsize + 1)
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, (boardsize + 1), player, opponent, 1)
+    if capture:
+        count += 1
+    capture = False    
+    # horizontal - check
+    index = point - 1
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, 1, player, opponent, 2)
+    if capture:
+        count += 1
+    capture = False    
+    # horizontal + check
+    index = point + 1
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, 1, player, opponent, 1)
+    if capture:
+        count += 1
+    capture = False    
+    # diagonal up/left check
+    index = point + (boardsize + 2)
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, (boardsize + 2), player, opponent, 1)
+    if capture:
+        count += 1
+    capture = False    
+    # diagonal down/right check
+    index = point - (boardsize + 2)
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, (boardsize + 2), player, opponent, 2)
+    if capture:
+        count += 1
+    capture = False    
+    # diagonal up/right check
+    index = point + boardsize
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, boardsize, player, opponent, 1)
+    if capture:
+        count += 1
+    capture = False    
+    # diagonal down/left check
+    index = point - boardsize
+    capture, capture_list = capture_check_direction(board, index, capture_list, capture, boardsize, player, opponent, 2)
+    if capture:
+        count += 1
+    if count > 0:
+        capture = True
+    return capture, capture_list, count
     
 def main():
     
-    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "playertomove", "winner"]
+    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner"]
 
     boardsize = 5
     board = [0] * ((boardsize + 1) ** 2)
@@ -125,13 +272,20 @@ def main():
     # show board
     show_board(board, boardsize)
     
+    player = 1
+    opponent = 2
+    black_capture_count = 0
+    white_capture_count = 0
+    capture_win = False
+    black_win = False
+    white_win = False
     user_inp = input("\nPlease enter a command: ")
     while user_inp:
         command = user_inp.split(" ")
         check_result = check_inp_command(command, commandlist)
         if check_result == 1:
             error = True
-            print("Error: Command does not exist. Use 'commands' to list existing commands")
+            print("\nError: Command does not exist. Use 'commands' to list existing commands")
         elif check_result == 2:
             pass
         elif check_result == 0:
@@ -155,7 +309,58 @@ def main():
             elif command[0] == "genmove":
                 pass
             elif command[0] == "play":
-                pass
+                if len(command) != 2:
+                    print("\nError: Command requires additional input. Consult README for more info")
+                else:
+                    move_status, capture, capture_count, win = play_move(command[1], board, boardsize, player, opponent)
+                    if move_status:
+                        if player == 1:
+                            p1 = "black"
+                            p2 = "white"
+                        else:
+                            p1 = "white"
+                            p2 = "black"
+                        print(p1, "played", command[1])
+                        # implement 4 in a row/3 in a row announcing here
+                        if capture:
+                            if player == 1:
+                                black_capture_count += capture_count
+                                if black_capture_count >= 5:
+                                    capture_win = True
+                                    black_win = True
+                            else:
+                                white_capture_count += capture_count
+                                if white_capture_count >= 5:
+                                    capture_win = True
+                                    white_win = True
+                            if capture_count == 1:
+                                print(p1, "made 1 capture")
+                            elif capture_count > 1:
+                                print(p1, "made", capture_count, "captures")
+                            if capture_win:
+                                if black_win:
+                                    print("Black wins by capture!")
+                                elif white_win:
+                                    print("White wins by capture!")
+                        if win:
+                            if player == 1:
+                                black_win = True
+                            else:
+                                white_win = True
+                            if black_win:
+                                print("Black wins via 5 in a row!")
+                            elif white_win:
+                                print("White wins via 5 in a row!")
+                        else:
+                            # game continues, switch internal current- player values
+                            if player == 1:
+                                player = 2
+                                opponent = 1
+                            else:
+                                player = 1
+                                opponent = 2
+                    else:
+                        print("Move was not played")
             elif command[0] == "commands":
                 print("\nCommands:")
                 for i in commandlist:
@@ -163,6 +368,7 @@ def main():
             elif command[0] == "emptyspaces":
                 empty_spaces = get_empty_spaces(board, boardsize)
                 count = 1
+                print("")
                 for i in empty_spaces:
                     print(i, end =' ')
                     if count == 10:
@@ -170,8 +376,9 @@ def main():
                         count = 1
                     else:
                         count += 1
-            elif command[0] == "player-to-move":
-                pass
+                print("")
+            elif command[0] == "ptm":
+                print("\nPlayer", player)
             elif command[0] == "winner":
                 pass
         user_inp = input("\nPlease enter a command: ")
