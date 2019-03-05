@@ -3,7 +3,7 @@ Adam Pumphrey, CMPUT 497, ID: 1469319
 
 Random Pente Player
 '''
-import sys
+import sys, random
 
 def build_board(boardsize):
     board = [0] * ((boardsize + 1) ** 2)
@@ -272,6 +272,79 @@ def check_game_status(black_status, white_status, draw_status):
     else:
         return False
     
+def generate_move(board, boardsize, player, opponent):
+    available_moves = get_empty_spaces(board, boardsize)
+    random.shuffle(available_moves)
+    move = available_moves[0]
+    move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
+    return move_status, capture, capture_count, win, move
+
+def display_move(move_status, player, move, board, boardsize):
+    if move_status:
+        if player == 1:
+            p1 = "black"
+            p2 = "white"
+        else:
+            p1 = "white"
+            p2 = "black"
+        print("")
+        print(p1, "played", move)
+        show_board(board, boardsize)
+        # implement 4 in a row/3 in a row announcing here
+    else:
+        print("Move was not played")
+
+def display_capture(capture, player, black_capture_count, white_capture_count, capture_count, black_win, white_win, p1, p2):
+    capture_win = False
+    if capture:
+        if player == 1:
+            black_capture_count += capture_count
+            if black_capture_count >= 5:
+                capture_win = True
+                black_win = True
+        else:
+            white_capture_count += capture_count
+            if white_capture_count >= 5:
+                capture_win = True
+                white_win = True
+        if capture_count == 1:
+            print("")
+            print(p1, "made 1 capture")
+        elif capture_count > 1:
+            print("")
+            print(p1, "made", capture_count, "captures")
+        if capture_win:
+            if black_win:
+                print("\nBlack made 5 or more captures - black wins!")
+            elif white_win:
+                print("\nWhite made 5 or more captures - white wins!")
+    return black_capture_count, white_capture_count, black_win, white_win
+
+def display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent):
+    if win:
+        if player == 1:
+            black_win = True
+        else:
+            white_win = True
+        if black_win:
+            print("\nBlack wins via 5 in a row!")
+        elif white_win:
+            print("\nWhite wins via 5 in a row!")
+    else:
+        draw = check_draw(board, boardsize, draw)
+        if draw:
+            print("\nGame has ended in a draw")
+        else:
+            # game continues, switch internal current-player values
+            if move_status:
+                if player == 1:
+                    player = 2
+                    opponent = 1
+                else:
+                    player = 1
+                    opponent = 2
+    return black_win, white_win, draw, player, opponent
+    
 def main():
     
     commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner", "showboard", "capturecounts"]
@@ -293,7 +366,7 @@ def main():
     opponent = 2
     black_capture_count = 0
     white_capture_count = 0
-    capture_win = False
+    #capture_win = False
     black_win = False
     white_win = False
     draw = False
@@ -320,20 +393,40 @@ def main():
                         board = build_board(boardsize)
                         show_board(board, boardsize)
             elif command[0] == "reset":
-                player = 1
-                opponent = 2
-                black_capture_count = 0
-                white_capture_count = 0
-                capture_win = False
-                black_win = False
-                white_win = False
-                draw = False                
-                board = build_board(boardsize)
-                show_board(board, boardsize)
+                if len(command) > 1:
+                    print("\nError: Incorrect amount of input for command. Consult README for more info")
+                else:
+                    player = 1
+                    opponent = 2
+                    black_capture_count = 0
+                    white_capture_count = 0
+                    capture_win = False
+                    black_win = False
+                    white_win = False
+                    draw = False                
+                    board = build_board(boardsize)
+                    show_board(board, boardsize)
             elif command[0] == "quit":
-                quit()
+                if len(command) > 1:
+                    print("\nError: Incorrect amount of input for command. Consult README for more info")
+                else:                
+                    quit()
             elif command[0] == "genmove":
-                pass
+                if len(command) > 1:
+                    print("\nError: Incorrect amount of input for command. Consult README for more info")
+                elif check_game_status(black_win, white_win, draw):
+                    print("\nGame is over. To start a new game, please use the 'reset' command")
+                else:
+                    move_status, capture, capture_count, win, move = generate_move(board, boardsize, player, opponent)
+                    if player == 1:
+                        p1 = "black"
+                        p2 = "white"
+                    else:
+                        p1 = "white"
+                        p2 = "black"
+                    display_move(move_status, player, move, board, boardsize)  
+                    black_capture_count, white_capture_count, black_win, white_win = display_capture(capture, player, black_capture_count, white_capture_count, capture_count, black_win, white_win, p1, p2)
+                    black_win, white_win, draw, player, opponent = display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent)                    
             elif command[0] == "play":
                 if len(command) < 2:
                     print("\nError: Command requires additional input. Consult README for more info")
@@ -342,67 +435,16 @@ def main():
                 elif check_game_status(black_win, white_win, draw):
                     print("\nGame is over. To start a new game, please use the 'reset' command")
                 else:
-                    if draw:
-                        print("\nMove not available. Game ended a draw")
+                    move_status, capture, capture_count, win = play_move(command[1], board, boardsize, player, opponent)
+                    if player == 1:
+                        p1 = "black"
+                        p2 = "white"
                     else:
-                        move_status, capture, capture_count, win = play_move(command[1], board, boardsize, player, opponent)
-                        if move_status:
-                            if player == 1:
-                                p1 = "black"
-                                p2 = "white"
-                            else:
-                                p1 = "white"
-                                p2 = "black"
-                            print("")
-                            print(p1, "played", command[1])
-                            show_board(board, boardsize)
-                            # implement 4 in a row/3 in a row announcing here
-                        else:
-                            print("Move was not played")                    
-                        if capture:
-                            if player == 1:
-                                black_capture_count += capture_count
-                                if black_capture_count >= 5:
-                                    capture_win = True
-                                    black_win = True
-                            else:
-                                white_capture_count += capture_count
-                                if white_capture_count >= 5:
-                                    capture_win = True
-                                    white_win = True
-                            if capture_count == 1:
-                                print("")
-                                print(p1, "made 1 capture")
-                            elif capture_count > 1:
-                                print("")
-                                print(p1, "made", capture_count, "captures")
-                            if capture_win:
-                                if black_win:
-                                    print("\nBlack made 5 or more captures - black wins!")
-                                elif white_win:
-                                    print("\nWhite made 5 or more captures - white wins!")
-                        if win:
-                            if player == 1:
-                                black_win = True
-                            else:
-                                white_win = True
-                            if black_win:
-                                print("\nBlack wins via 5 in a row!")
-                            elif white_win:
-                                print("\nWhite wins via 5 in a row!")
-                        else:
-                            draw = check_draw(board, boardsize, draw)
-                            if draw:
-                                print("\nGame has ended in a draw")
-                            else:
-                                # game continues, switch internal current-player values
-                                if move_status:
-                                    if player == 1:
-                                        player = 2
-                                        opponent = 1
-                                    else:
-                                        player = 1
-                                        opponent = 2
+                        p1 = "white"
+                        p2 = "black"     
+                    display_move(move_status, player, command[1], board, boardsize)  
+                    black_capture_count, white_capture_count, black_win, white_win = display_capture(capture, player, black_capture_count, white_capture_count, capture_count, black_win, white_win, p1, p2)
+                    black_win, white_win, draw, player, opponent = display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent)
             elif command[0] == "commands":
                 print("\nCommands:")
                 for i in commandlist:
@@ -420,10 +462,13 @@ def main():
                         count += 1
                 print("")
             elif command[0] == "ptm":
-                if player == 1:
-                    print("\nIt is black's turn")
+                if check_game_status(black_win, white_win, draw):
+                    print("\nThe game has ended. To start a new game, please use the 'reset' command")
                 else:
-                    print("\nIt is white's turn")
+                    if player == 1:
+                        print("\nIt is black's turn")
+                    else:
+                        print("\nIt is white's turn")
             elif command[0] == "winner":
                 if black_win:
                     print("\nBlack is the winner!")
