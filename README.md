@@ -93,19 +93,19 @@ Commands:
             
 Error Messages:
 
-    Command does not exist - the command entered is not in the existing command list
+    command does not exist - the command entered is not in the existing command list
     
-    Command requires additional input - the command entered requires an argument
+    command requires additional input - the command entered requires an argument
     
-    Incorrect amount of input for command - the command entered does not require an argument
+    incorrect amount of input for command - the command entered does not require an argument
     
-    Illegal move - move specified violates the rules of the game
+    illegal move - move specified violates the rules of the game
     
-    Boardsize must be an integer between 5 and 19 - boardsize specified is not within the correct range
+    boardsize must be an integer between 5 and 19 - boardsize specified is not within the correct range
     
-    Board location syntax incorrect - move specified is not formatted correctly
+    board location syntax incorrect - move specified is not formatted correctly
     
-    Board location out of bounds - move specified is off of the board
+    board location out of bounds - move specified is off of the board
 
 Rules of Pente:
 
@@ -149,4 +149,4 @@ Rules of Pente:
         
         only difference is that the first player's second move must be at least 3 spaces away from center
         
-    For more information, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
+    For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
