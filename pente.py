@@ -390,6 +390,14 @@ def main():
                         pass
                     else:
                         boardsize = new_boardsize
+                        player = 1
+                        opponent = 2
+                        black_capture_count = 0
+                        white_capture_count = 0
+                        capture_win = False
+                        black_win = False
+                        white_win = False
+                        draw = False                
                         board = build_board(boardsize)
                         show_board(board, boardsize)
             elif command[0] == "reset":
