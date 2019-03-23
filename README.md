@@ -149,4 +149,4 @@ Rules of Pente:
         
         only difference is that the first player's second move must be at least 3 spaces away from center
         
-    For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
+For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
