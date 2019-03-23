@@ -348,7 +348,7 @@ def display_win(win, player, black_win, white_win, draw, board, boardsize, move_
     
 def main():
     
-    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner", "showboard", "capturecounts", "playgame"]
+    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm"]
 
     boardsize = 5
     board = [0] * ((boardsize + 1) ** 2)
@@ -479,6 +479,30 @@ def main():
                         print("\nIt is black's turn")
                     else:
                         print("\nIt is white's turn")
+            elif command[0] == "changeptm":
+                if len(command) < 2:
+                    print("\nError: Command requires additional input. Consult README for more info")
+                elif len(command) > 2:
+                    print("\nError: Incorrect amount of input for command. Consult README for more info")                
+                elif check_game_status(black_win, white_win, draw):
+                    print("\nThe game has ended. To start a new game, please use the 'reset' command")
+                else:
+                    inp = command[1]
+                    if not inp.isalpha():
+                        print("\nError: Incorrect input for command. Consult README for more info")
+                    else:
+                        inp = inp.lower()
+                        if inp == "b":
+                            player = 1
+                            opponent = 2
+                            print("\nPlayer to move is now Black")
+                        elif inp == "w":
+                            player = 2
+                            opponent = 1
+                            print("\nPlayer to move is now White")
+                        else:
+                            print("\nError: Incorrect input for command. Consult README for more info")
+                    
             elif command[0] == "winner":
                 if black_win:
                     print("\nBlack is the winner!")
