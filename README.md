@@ -90,6 +90,24 @@ Commands:
             Black has made <int> capture(s)
             
             White has made <int> capture(s)
+    
+    playgame - initiates a cpu vs. cpu game of Pente
+    
+        usage: playgame
+        
+        output:
+        
+            <player> played <move>
+            
+            Current board: <board>
+            
+    changeptm - changes the current player-to-move
+    
+        usage: changeptm <str>  eg) changeptm b
+        
+        output:
+        
+            Player to move is now <player>
             
 Error Messages:
 
@@ -98,6 +116,8 @@ Error Messages:
     command requires additional input - the command entered requires an argument
     
     incorrect amount of input for command - the command entered does not require an argument
+    
+    incorrect input for command - the additional input for the command is not permitted
     
     illegal move - move specified violates the rules of the game
     
