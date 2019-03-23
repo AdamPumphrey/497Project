@@ -319,31 +319,29 @@ def display_capture(capture, player, black_capture_count, white_capture_count, c
                 print("\nWhite made 5 or more captures - white wins!")
     return black_capture_count, white_capture_count, black_win, white_win
 
-def display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent, mode=0):
+def display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent):
     if win:
         if player == 1:
             black_win = True
         else:
             white_win = True
-        if mode == 0:
-            if black_win:
-                print("\nBlack wins via 5 in a row!")
-            elif white_win:
-                print("\nWhite wins via 5 in a row!")
+        if black_win:
+            print("\nBlack wins via 5 in a row!")
+        elif white_win:
+            print("\nWhite wins via 5 in a row!")
     else:
         draw = check_draw(board, boardsize, draw)
-        if mode == 0:
-            if draw:
-                print("\nGame has ended in a draw")
-            else:
-                # game continues, switch internal current-player values
-                if move_status:
-                    if player == 1:
-                        player = 2
-                        opponent = 1
-                    else:
-                        player = 1
-                        opponent = 2
+        if draw:
+            print("\nGame has ended in a draw")
+        else:
+            # game continues, switch internal current-player values
+            if move_status:
+                if player == 1:
+                    player = 2
+                    opponent = 1
+                else:
+                    player = 1
+                    opponent = 2
     return black_win, white_win, draw, player, opponent
     
 def main():
@@ -519,26 +517,20 @@ def main():
                 print("Black has made", black_capture_count, "capture(s)")
                 print("White has made", white_capture_count, "captures(s)")
             elif command[0] == "playgame":
-                while not black_win and not white_win and not draw:
-                    move_status, capture, capture_count, win, move = generate_move(board, boardsize, player, opponent)
-                    if player == 1:
-                        p1 = "black"
-                        p2 = "white"
-                    else:
-                        p1 = "white"
-                        p2 = "black"
-                    display_move(move_status, player, move, board, boardsize)  
-                    black_capture_count, white_capture_count, black_win, white_win = display_capture(capture, player, black_capture_count, white_capture_count, capture_count, black_win, white_win, p1, p2)
-                    black_win, white_win, draw, player, opponent = display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent, 1)
-                if black_win:
-                    show_board(board, boardsize)
-                    print("\nBlack wins via 5 in a row!")
-                elif white_win:
-                    show_board(board, boardsize)
-                    print("\nWhite wins via 5 in a row!")
-                elif draw:
-                    show_board(board, boardsize)
-                    print("\nGame has ended in a draw")
+                if check_game_status(black_win, white_win, draw):
+                    print("\nThe game has ended. To start a new game, please use the 'reset' command") 
+                else:
+                    while not black_win and not white_win and not draw:
+                        move_status, capture, capture_count, win, move = generate_move(board, boardsize, player, opponent)
+                        if player == 1:
+                            p1 = "black"
+                            p2 = "white"
+                        else:
+                            p1 = "white"
+                            p2 = "black"
+                        display_move(move_status, player, move, board, boardsize)  
+                        black_capture_count, white_capture_count, black_win, white_win = display_capture(capture, player, black_capture_count, white_capture_count, capture_count, black_win, white_win, p1, p2)
+                        black_win, white_win, draw, player, opponent = display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent)               
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
