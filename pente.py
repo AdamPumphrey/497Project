@@ -132,7 +132,6 @@ def play_move(move, board, boardsize, player, opponent):
     board[point] = player
     # check for capture
     # capture can only be in form of O-X-X-O as per rules
-    # need to implement keeping track of number of captures for player
     capture_status, capture_list, capture_count = capture_check(board, boardsize, player, opponent, point)
     if capture_status:
         for i in capture_list:
@@ -347,7 +346,7 @@ def display_win(win, player, black_win, white_win, draw, board, boardsize, move_
     
 def main():
     
-    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner", "showboard", "capturecounts"]
+    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner", "showboard", "capturecounts", "playgame"]
 
     boardsize = 5
     board = [0] * ((boardsize + 1) ** 2)
@@ -426,6 +425,7 @@ def main():
                     print("\nGame is over. To start a new game, please use the 'reset' command")
                 else:
                     move_status, capture, capture_count, win, move = generate_move(board, boardsize, player, opponent)
+                    #get_line(board, opponent, player, last_move_index, offset, diag_search=False, rev=0)
                     if player == 1:
                         p1 = "black"
                         p2 = "white"
@@ -492,6 +492,18 @@ def main():
                 print("\n5 or more captures are needed for a capture win")
                 print("Black has made", black_capture_count, "capture(s)")
                 print("White has made", white_capture_count, "captures(s)")
+            elif command[0] == "playgame":
+                while not black_win and not white_win and not draw:
+                    move_status, capture, capture_count, win, move = generate_move(board, boardsize, player, opponent)
+                    if player == 1:
+                        p1 = "black"
+                        p2 = "white"
+                    else:
+                        p1 = "white"
+                        p2 = "black"
+                    display_move(move_status, player, move, board, boardsize)  
+                    black_capture_count, white_capture_count, black_win, white_win = display_capture(capture, player, black_capture_count, white_capture_count, capture_count, black_win, white_win, p1, p2)
+                    black_win, white_win, draw, player, opponent = display_win(win, player, black_win, white_win, draw, board, boardsize, move_status, opponent)
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
