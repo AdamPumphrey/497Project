@@ -381,12 +381,16 @@ def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_
     else:
         p1 = "white"
         p2 = "black"
-    return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_status, capture, capture_count, move, p1, p2, win)
+    return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_status, 
+                       capture, capture_count, move, p1, p2, win)
 
-def format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_status, capture, capture_count, move, p1, p2, win):
-    display_move(move_status, player, move, board, boardsize)  
-    b_cap_count, w_cap_count, b_win, w_win = display_capture(capture, player, b_cap_count, w_cap_count, capture_count, b_win, w_win, p1, p2)
-    b_win, w_win, draw, player, opponent = display_win(win, player, b_win, w_win, draw, board, boardsize, move_status, opponent)
+def format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, 
+                w_win, draw, move_status, capture, capture_count, move, p1, p2, win):
+    display_move(move_status, player, move, board, boardsize)
+    b_cap_count, w_cap_count, b_win, w_win \
+        = display_capture(capture, player, b_cap_count, w_cap_count, capture_count, b_win, w_win, p1, p2)
+    b_win, w_win, draw, player, opponent \
+        = display_win(win, player, b_win, w_win, draw, board, boardsize, move_status, opponent)
     return board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw
 
 def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move):
@@ -397,7 +401,8 @@ def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win
     else:
         p1 = "white"
         p2 = "black"
-    return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_status, capture, capture_count, move, p1, p2, win)
+    return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, 
+                       w_win, draw, move_status, capture, capture_count, move, p1, p2, win)
 
 def emptyspaces_cmd(board, boardsize):
     empty_spaces = get_empty_spaces(board, boardsize)
