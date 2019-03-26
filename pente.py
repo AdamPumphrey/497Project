@@ -401,6 +401,7 @@ def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win
 
 def emptyspaces_cmd(board, boardsize):
     empty_spaces = get_empty_spaces(board, boardsize)
+    empty_spaces.sort()
     count = 1
     print("")
     for i in empty_spaces:
@@ -567,7 +568,7 @@ def main():
                         board, boardsize, player, opponent, black_cap_count, white_cap_count,\
                         black_win, white_win, draw \
                         = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                      white_capture_count, black_win, white_win, draw)              
+                                      white_capture_count, black_win, white_win, draw)
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
