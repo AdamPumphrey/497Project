@@ -455,7 +455,8 @@ def changeptm_cmd(inp, player, opponent):
 
 def main():
     
-    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm"]
+    commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", 
+                   "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm"]
 
     boardsize = 5
     board = [0] * ((boardsize + 1) ** 2)
