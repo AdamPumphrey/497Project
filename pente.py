@@ -16,7 +16,8 @@ def build_board(boardsize):
     #board.append(0)
     board.extend(top_border)
     board.append(3)
-    return board
+    move_history = []
+    return board, move_history
 
 def show_board(board, boardsize):
     column_list = []
@@ -271,7 +272,7 @@ def check_game_status(black_status, white_status, draw_status):
     else:
         return False
     
-def generate_move(board, boardsize, player, opponent):
+def generate_random_move(board, boardsize, player, opponent):
     available_moves = get_empty_spaces(board, boardsize)
     random.shuffle(available_moves)
     move = available_moves[0]
@@ -353,9 +354,9 @@ def boardsize_cmd(command, board):
             return board, 99
         else:
             boardsize = new_boardsize                
-            board = build_board(boardsize)
+            board, move_history = build_board(boardsize)
             show_board(board, boardsize)
-            return board, True
+            return board, move_history, True
 
 def reset_win_status():
     b_win = False
@@ -373,8 +374,8 @@ def reset_cap_counts():
     wcc = 0
     return bcc, wcc
 
-def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw):
-    move_status, capture, capture_count, win, move = generate_move(board, boardsize, player, opponent)
+def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_history):
+    move_status, capture, capture_count, win, move = generate_random_move(board, boardsize, player, opponent)
     if player == 1:
         p1 = "black"
         p2 = "white"
@@ -382,18 +383,19 @@ def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_
         p1 = "white"
         p2 = "black"
     return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_status, 
-                       capture, capture_count, move, p1, p2, win)
+                       capture, capture_count, move, p1, p2, win, move_history)
 
 def format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, 
-                w_win, draw, move_status, capture, capture_count, move, p1, p2, win):
+                w_win, draw, move_status, capture, capture_count, move, p1, p2, win, move_history):
     display_move(move_status, player, move, board, boardsize)
     b_cap_count, w_cap_count, b_win, w_win \
         = display_capture(capture, player, b_cap_count, w_cap_count, capture_count, b_win, w_win, p1, p2)
     b_win, w_win, draw, player, opponent \
         = display_win(win, player, b_win, w_win, draw, board, boardsize, move_status, opponent)
+    move_history.append((p1[0], move))
     return board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw
 
-def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move):
+def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move, move_history):
     move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
     if player == 1:
         p1 = "black"
@@ -402,7 +404,7 @@ def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win
         p1 = "white"
         p2 = "black"
     return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, 
-                       w_win, draw, move_status, capture, capture_count, move, p1, p2, win)
+                       w_win, draw, move_status, capture, capture_count, move, p1, p2, win, move_history)
 
 def emptyspaces_cmd(board, boardsize):
     empty_spaces = get_empty_spaces(board, boardsize)
@@ -456,13 +458,13 @@ def changeptm_cmd(inp, player, opponent):
 def main():
     
     commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", 
-                   "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm"]
+                   "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm", "movehistory"]
 
     boardsize = 5
     board = [0] * ((boardsize + 1) ** 2)
     
     # build board
-    board = build_board(boardsize)
+    board, move_history = build_board(boardsize)
     
     # show board
     print("Pente random player, by Adam Pumphrey")
@@ -490,7 +492,7 @@ def main():
         elif check_result == 0:
             # execute command
             if command[0] == "boardsize":
-                board, success = boardsize_cmd(command, board)
+                board, move_history, success = boardsize_cmd(command, board)
                 if not success:
                     print("\nError: Command requires additional input. Consult README for more info")
                 else:
@@ -502,28 +504,28 @@ def main():
                         black_win, white_win, draw = reset_win_status()                        
             elif command[0] == "reset":
                 if len(command) > 1:
-                    print("\nError: Incorrect amount of input for command. Consult README for more info")
+                    print("\nError: Command does not require additional input. Consult README for more info")
                 else:
                     player, opponent = reset_players()
                     black_capture_count, white_capture_count = reset_cap_counts()
                     black_win, white_win, draw = reset_win_status()
-                    board = build_board(boardsize)
+                    board, move_history = build_board(boardsize)
                     show_board(board, boardsize)
             elif command[0] == "quit":
                 if len(command) > 1:
-                    print("\nError: Incorrect amount of input for command. Consult README for more info")
+                    print("\nError: Command does not require additional input. Consult README for more info")
                 else:                
                     quit()
             elif command[0] == "genmove":
                 if len(command) > 1:
-                    print("\nError: Incorrect amount of input for command. Consult README for more info")
+                    print("\nError: Command does not require additional input. Consult README for more info")
                 elif check_game_status(black_win, white_win, draw):
                     print("\nGame is over. To start a new game, please use the 'reset' command")
                 else:
                     board, boardsize, player, opponent, black_cap_count, white_cap_count,\
                     black_win, white_win, draw \
                     = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                  white_capture_count, black_win, white_win, draw)                  
+                                  white_capture_count, black_win, white_win, draw, move_history)                  
             elif command[0] == "play":
                 if len(command) < 2:
                     print("\nError: Command requires additional input. Consult README for more info")
@@ -535,18 +537,27 @@ def main():
                     board, boardsize, player, opponent, black_capture_count, white_capture_count,\
                         black_win, white_win, draw \
                         = play_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                   white_capture_count, black_win, white_win, draw, command[1])
+                                   white_capture_count, black_win, white_win, draw, command[1], move_history)
             elif command[0] == "commands":
-                print("\nCommands:")
-                for i in commandlist:
-                    print(" ", i)
-            elif command[0] == "emptyspaces":
-                emptyspaces_cmd(board, boardsize)
-            elif command[0] == "ptm":
-                if check_game_status(black_win, white_win, draw):
-                    print("\nThe game has ended. To start a new game, please use the 'reset' command")
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
                 else:
-                    ptm_cmd(player)
+                    print("\nCommands:")
+                    for i in commandlist:
+                        print(" ", i)
+            elif command[0] == "emptyspaces":
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
+                else:
+                    emptyspaces_cmd(board, boardsize)
+            elif command[0] == "ptm":
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
+                else:
+                    if check_game_status(black_win, white_win, draw):
+                        print("\nThe game has ended. To start a new game, please use the 'reset' command")
+                    else: 
+                        ptm_cmd(player)
             elif command[0] == "changeptm":
                 if len(command) < 2:
                     print("\nError: Command requires additional input. Consult README for more info")
@@ -561,20 +572,69 @@ def main():
                     else:
                         player, opponent = changeptm_cmd(inp, player, opponent)
             elif command[0] == "winner":
-                winner_cmd(black_win, white_win, draw)
-            elif command[0] == "showboard":
-                show_board(board, boardsize)
-            elif command[0] == "capturecounts":
-                capturecounts_cmd(black_capture_count, white_capture_count)
-            elif command[0] == "playgame":
-                if check_game_status(black_win, white_win, draw):
-                    print("\nThe game has ended. To start a new game, please use the 'reset' command") 
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
                 else:
-                    while not black_win and not white_win and not draw:
-                        board, boardsize, player, opponent, black_cap_count, white_cap_count,\
-                        black_win, white_win, draw \
-                        = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                      white_capture_count, black_win, white_win, draw)
+                    winner_cmd(black_win, white_win, draw)
+            elif command[0] == "showboard":
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
+                else:
+                    show_board(board, boardsize)
+            elif command[0] == "capturecounts":
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
+                else:
+                    capturecounts_cmd(black_capture_count, white_capture_count)
+            elif command[0] == "playgame":
+                if len(command) > 1:
+                    print("\nError: Command does not require additional input. Consult README for more info")
+                else:
+                    if check_game_status(black_win, white_win, draw):
+                        print("\nThe game has ended. To start a new game, please use the 'reset' command") 
+                    else:
+                        while not black_win and not white_win and not draw:
+                            board, boardsize, player, opponent, black_cap_count, white_cap_count,\
+                                black_win, white_win, draw \
+                                = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                      white_capture_count, black_win, white_win, draw, move_history)
+            elif command[0] == "movehistory":
+                if len(command) > 1:
+                    if len(command) > 2:
+                        print("\nError: Incorrect amount of input for command. Consult README for more info.")
+                    else:
+                        inp = command[1]
+                        if not inp.isalpha():
+                            print("\nError: Incorrect input for command. Consult README for more info.")
+                        else:
+                            if command[1].lower() == "b":
+                                if len(move_history) < 1:
+                                    print("\nBlack has not made a move yet")
+                                else:
+                                    count = 1
+                                    for move in move_history:
+                                        if move[0] == "b":
+                                            print(str(count)+".", move[0].upper(), move[1])
+                                            count += 1
+                            elif command[1].lower() == "w":
+                                if len(move_history) < 1:
+                                    print("\nWhite has not made a move yet")
+                                else:
+                                    count = 1
+                                    for move in move_history:
+                                        if move[0] == "w":
+                                            print(str(count)+".", move[0].upper(), move[1])
+                                            count += 1
+                            else:
+                                print("\nError: Incorrect input for command. Consult README for more info.")
+                else:
+                    if len(move_history) < 1:
+                        print("\nNo moves have been made yet")
+                    else:
+                        count = 1
+                        for move in move_history:
+                            print(str(count)+".", move[0].upper(), move[1])
+                            count += 1
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
