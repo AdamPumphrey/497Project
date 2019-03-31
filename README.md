@@ -5,7 +5,7 @@ Built with Python 3
 
 Runs out of command line (for now)
 
-Commands:
+# Commands:
 
     boardsize - resets game and creates new board with specified boardsize
   
@@ -123,7 +123,7 @@ Commands:
             2. <player> <move>
             etc...
             
-Error Messages:
+# Error Messages:
 
     command does not exist - the command entered is not in the existing command list
     
@@ -143,7 +143,7 @@ Error Messages:
     
     board location out of bounds - move specified is off of the board
 
-Rules of Pente:
+# Rules of Pente:
 
     Win conditions:
     
