@@ -455,6 +455,43 @@ def changeptm_cmd(inp, player, opponent):
         print("\nError: Incorrect input for command. Consult README for more info") 
     return player, opponent
 
+def movehistory_cmd(inp, move_history):
+    if len(inp) > 1:
+        if len(inp) > 2:
+            print("\nError: Incorrect amount of input for command. Consult README for more info.")
+        else:
+            if not inp[1].isalpha():
+                print("\nError: Incorrect input for command. Consult README for more info.")
+            else:
+                if inp[1].lower() == "b":
+                    if len(move_history) < 1:
+                        print("\nBlack has not made a move yet")
+                    else:
+                        count = 1
+                        for move in move_history:
+                            if move[0] == "b":
+                                print(str(count)+".", move[0].upper(), move[1])
+                                count += 1
+                elif inp[1].lower() == "w":
+                    if len(move_history) < 1:
+                        print("\nWhite has not made a move yet")
+                    else:
+                        count = 1
+                        for move in move_history:
+                            if move[0] == "w":
+                                print(str(count)+".", move[0].upper(), move[1])
+                                count += 1
+                else:
+                    print("\nError: Incorrect input for command. Consult README for more info.")
+    else:
+        if len(move_history) < 1:
+            print("\nNo moves have been made yet")
+        else:
+            count = 1
+            for move in move_history:
+                print(str(count)+".", move[0].upper(), move[1])
+                count += 1    
+
 def main():
     
     commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", 
@@ -599,42 +636,7 @@ def main():
                                 = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
                                       white_capture_count, black_win, white_win, draw, move_history)
             elif command[0] == "movehistory":
-                if len(command) > 1:
-                    if len(command) > 2:
-                        print("\nError: Incorrect amount of input for command. Consult README for more info.")
-                    else:
-                        inp = command[1]
-                        if not inp.isalpha():
-                            print("\nError: Incorrect input for command. Consult README for more info.")
-                        else:
-                            if command[1].lower() == "b":
-                                if len(move_history) < 1:
-                                    print("\nBlack has not made a move yet")
-                                else:
-                                    count = 1
-                                    for move in move_history:
-                                        if move[0] == "b":
-                                            print(str(count)+".", move[0].upper(), move[1])
-                                            count += 1
-                            elif command[1].lower() == "w":
-                                if len(move_history) < 1:
-                                    print("\nWhite has not made a move yet")
-                                else:
-                                    count = 1
-                                    for move in move_history:
-                                        if move[0] == "w":
-                                            print(str(count)+".", move[0].upper(), move[1])
-                                            count += 1
-                            else:
-                                print("\nError: Incorrect input for command. Consult README for more info.")
-                else:
-                    if len(move_history) < 1:
-                        print("\nNo moves have been made yet")
-                    else:
-                        count = 1
-                        for move in move_history:
-                            print(str(count)+".", move[0].upper(), move[1])
-                            count += 1
+                movehistory_cmd(command, move_history)
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
