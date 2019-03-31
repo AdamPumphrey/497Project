@@ -524,8 +524,6 @@ def main():
         if check_result == 1:
             error = True
             print("\nError: Command does not exist. Use 'commands' to list existing commands")
-        elif check_result == 2:
-            pass
         elif check_result == 0:
             # execute command
             if command[0] == "boardsize":
