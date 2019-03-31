@@ -109,15 +109,31 @@ Commands:
         
             Player to move is now <player>
             
+    movehistory - displays move history for entire game or specified player
+    
+        usage: movehistory <str>  eg) movehistory b
+            
+            can be used without additional input to display full move history of game
+            
+            eg) movehistory
+        
+        output:
+        
+            1. <player> <move>
+            2. <player> <move>
+            etc...
+            
 Error Messages:
 
     command does not exist - the command entered is not in the existing command list
     
-    command requires additional input - the command entered requires an argument
+    command requires additional input - the command entered requires an argument, but no argument was provided
     
-    incorrect amount of input for command - the command entered does not require an argument
+    command does not require additional input - the command entered does not require an argument, but one was provided
     
-    incorrect input for command - the additional input for the command is not permitted
+    incorrect amount of input for command - too many arguments were provided for the command entered
+    
+    incorrect input for command - the argument provided is not permitted for the command entered
     
     illegal move - move specified violates the rules of the game
     
