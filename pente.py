@@ -285,13 +285,64 @@ def generate_random_move(board, boardsize, player, opponent, move_history, rules
         pos = (len(board) - 1) // 2
         move = point_to_boardloc(pos, boardsize)
     elif ruleset == 1 and player == 1 and len(move_history) == 2:
-        pass
+        available_moves = get_empty_spaces(board, boardsize)
+        center = (len(board) - 1) // 2
+        center = point_to_boardloc(center, boardsize)
+        center_ord = ord(center[0])
+        legal_moves = []
+        for move in available_moves:
+            move_ord = ord(move[0])
+            ord_diff = abs(center_ord - move_ord)
+            if ord_diff < 3:
+                center_coord = int(center[1])
+                move_coord = int(move[1])
+                coord_diff = abs(center_coord - move_coord)
+                if coord_diff >= 3:
+                    legal_moves.append(move)
+            else:
+                legal_moves.append(move)
+        random.shuffle(legal_moves)
+        move = legal_moves[0]
     else:
         available_moves = get_empty_spaces(board, boardsize)
         random.shuffle(available_moves)
         move = available_moves[0]
     move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
     return move_status, capture, capture_count, win, move
+
+def tournament_rule_check(board, boardsize, player, move_history, move):
+    if player == 1 and len(move_history) == 0:
+        pos = (len(board) - 1) // 2
+        center = point_to_boardloc(pos, boardsize)
+        if move != center:
+            print("\nError: Black's first move must be the center point")
+            return False
+        else:
+            return True
+    elif player == 1 and len(move_history) == 2:
+        available_moves = get_empty_spaces(board, boardsize)
+        center = (len(board) - 1) // 2
+        center = point_to_boardloc(center, boardsize)
+        center_ord = ord(center[0])
+        legal_moves = []
+        for i in available_moves:
+            move_ord = ord(i[0])
+            ord_diff = abs(center_ord - move_ord)
+            if ord_diff < 3:
+                center_coord = int(center[1])
+                move_coord = int(i[1])
+                coord_diff = abs(center_coord - move_coord)
+                if coord_diff >= 3:
+                    legal_moves.append(i)
+            else:
+                legal_moves.append(i)
+        if move not in legal_moves:
+            print("\nError: Black's second move must be at least 3 spaces away from the center point")
+            return False
+        else:
+            return True
+    else:
+        return True
 
 def display_move(move_status, player, move, board, boardsize):
     if move_status:
@@ -588,10 +639,20 @@ def main():
                 elif check_game_status(black_win, white_win, draw):
                     print("\nGame is over. To start a new game, please use the 'reset' command")
                 else:
-                    board, boardsize, player, opponent, black_capture_count, white_capture_count,\
-                        black_win, white_win, draw \
-                        = play_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                   white_capture_count, black_win, white_win, draw, command[1], move_history)
+                    if ruleset == 1:
+                        check = tournament_rule_check(board, boardsize, player, move_history, command[1])
+                        if check:
+                            board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = play_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                           white_capture_count, black_win, white_win, draw, command[1], move_history)
+                        else:
+                            show_board(board, boardsize)
+                    else:
+                        board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                            black_win, white_win, draw \
+                            = play_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                       white_capture_count, black_win, white_win, draw, command[1], move_history)                        
             elif command[0] == "commands":
                 if len(command) > 1:
                     print("\nError: Command does not require additional input. Consult README for more info")
@@ -651,7 +712,7 @@ def main():
                             board, boardsize, player, opponent, black_cap_count, white_cap_count,\
                                 black_win, white_win, draw \
                                 = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                      white_capture_count, black_win, white_win, draw, move_history)
+                                      white_capture_count, black_win, white_win, draw, move_history, ruleset)
             elif command[0] == "movehistory":
                 movehistory_cmd(command, move_history)
             elif command[0] == "changerules":
