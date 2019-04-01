@@ -295,7 +295,7 @@ def check_game_status(black_status, white_status, draw_status):
         return False
     
 def generate_random_move(board, boardsize, player, opponent, move_history, ruleset):
-    if ruleset == 1 and player == 1 and len(move_history) == 0:
+    if player == 1 and len(move_history) == 0:
         pos = (len(board) - 1) // 2
         move = point_to_boardloc(pos, boardsize)
     elif ruleset == 1 and player == 1 and len(move_history) == 2:
@@ -325,15 +325,15 @@ def generate_random_move(board, boardsize, player, opponent, move_history, rules
     return move_status, capture, capture_count, win, move
 
 def tournament_rule_check(board, boardsize, player, move_history, move):
-    if player == 1 and len(move_history) == 0:
-        pos = (len(board) - 1) // 2
-        center = point_to_boardloc(pos, boardsize)
-        if move != center:
-            print("\nError: Black's first move must be the center point")
-            return False
-        else:
-            return True
-    elif player == 1 and len(move_history) == 2:
+    #if player == 1 and len(move_history) == 0:
+        #pos = (len(board) - 1) // 2
+        #center = point_to_boardloc(pos, boardsize)
+        #if move != center:
+            #print("\nError: Black's first move must be the center point")
+            #return False
+        #else:
+            #return True
+    if player == 1 and len(move_history) == 2:
         available_moves = get_empty_spaces(board, boardsize)
         center = (len(board) - 1) // 2
         center = point_to_boardloc(center, boardsize)
@@ -653,7 +653,18 @@ def main():
                 elif check_game_status(black_win, white_win, draw):
                     print("\nGame is over. To start a new game, please use the 'reset' command")
                 else:
-                    if ruleset == 1:
+                    if player == 1 and len(move_history) == 0:
+                        pos = (len(board) - 1) // 2
+                        center = point_to_boardloc(pos, boardsize)
+                        if command[1] != center:
+                            print("\nError: Black's first move must be the center point")
+                            show_board(board, boardsize)
+                        else:
+                            board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = play_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                           white_capture_count, black_win, white_win, draw, command[1], move_history)                             
+                    elif ruleset == 1:
                         check = tournament_rule_check(board, boardsize, player, move_history, command[1])
                         if check:
                             board, boardsize, player, opponent, black_capture_count, white_capture_count,\
