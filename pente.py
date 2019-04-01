@@ -709,7 +709,7 @@ def main():
                         print("\nThe game has ended. To start a new game, please use the 'reset' command") 
                     else:
                         while not black_win and not white_win and not draw:
-                            board, boardsize, player, opponent, black_cap_count, white_cap_count,\
+                            board, boardsize, player, opponent, black_capture_count, white_capture_count,\
                                 black_win, white_win, draw \
                                 = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
                                       white_capture_count, black_win, white_win, draw, move_history, ruleset)
