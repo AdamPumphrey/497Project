@@ -647,22 +647,26 @@ def main():
             elif command[0] == "movehistory":
                 movehistory_cmd(command, move_history)
             elif command[0] == "changerules":
-                arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules: ")
+                arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules, enter c to cancel: ")
                 argcheck = False
                 while not argcheck:
-                    if arg != "1" and arg != "2":
+                    if arg != "1" and arg != "2" and arg != "c":
                         print("\nError: Incorrect input for command. Consult README for more info")
                         check_ruleset(ruleset)
                         arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules: ")
                     else:
                         argcheck = True
-                ruleset = int(arg)
-                check_ruleset(ruleset)
-                player, opponent = reset_players()
-                black_capture_count, white_capture_count = reset_cap_counts()
-                black_win, white_win, draw = reset_win_status()
-                board, move_history = build_board(boardsize)
-                show_board(board, boardsize)
+                if arg == "c":
+                    check_ruleset(ruleset)
+                    show_board(board, boardsize)
+                else:
+                    ruleset = int(arg)
+                    check_ruleset(ruleset)
+                    player, opponent = reset_players()
+                    black_capture_count, white_capture_count = reset_cap_counts()
+                    black_win, white_win, draw = reset_win_status()
+                    board, move_history = build_board(boardsize)
+                    show_board(board, boardsize)
             elif command[0] == "rules":
                 check_ruleset(ruleset)
         user_inp = input("\nPlease enter a command: ")
