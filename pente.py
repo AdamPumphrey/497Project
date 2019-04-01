@@ -105,15 +105,15 @@ def check_inp_command(command, commandlist):
 
 def boardsize_change(new_size):
     if not new_size.isdigit():
-        print("\nError: Boardsize must be an odd integer between 5 and 19")
+        print("\nError: Boardsize must be an odd integer between 7 and 19")
         return 1
     else:
         new_boardsize = int(new_size)
-        if new_boardsize < 5 or new_boardsize > 19:
-            print("\nError: Boardsize must be an odd integer between 5 and 19")
+        if new_boardsize < 7 or new_boardsize > 19:
+            print("\nError: Boardsize must be an odd integer between 7 and 19")
             return 1
         elif new_boardsize % 2 == 0:
-            print("\nError: Boardsize must be an odd integer between 5 and 19")
+            print("\nError: Boardsize must be an odd integer between 7 and 19")
             return 1
         else:
             return new_boardsize
@@ -520,7 +520,7 @@ def main():
                    "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm", "movehistory",
                    "rules", "changerules"]
 
-    boardsize = 11
+    boardsize = 7
     board = [0] * ((boardsize + 1) ** 2)
     
     # build board
