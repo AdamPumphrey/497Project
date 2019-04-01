@@ -153,17 +153,31 @@ def play_move(move, board, boardsize, player, opponent):
 
 def check_win(board, boardsize, player, point):
     win = False
+    blocks = []
     # vertical check
-    win = check_win_directions(board, point, win, (boardsize + 1), player)
+    win, block1 = check_win_directions(board, point, win, (boardsize + 1), player)
+    blocks.append(block1)
     if not win:
         # horizontal check
-        win = check_win_directions(board, point, win, 1, player)
+        win, block2 = check_win_directions(board, point, win, 1, player)
+        blocks.append(block2)
         if not win:
             # diagonal up/left, down/right check
-            win = check_win_directions(board, point, win, (boardsize + 2), player)
+            win, block3 = check_win_directions(board, point, win, (boardsize + 2), player)
+            blocks.append(block3)
             if not win:
                 # diagonal up/right, down/left check
-                win = check_win_directions(board, point, win, (boardsize), player)
+                win, block4 = check_win_directions(board, point, win, (boardsize), player)
+                blocks.append(block4)
+    if player == 1:
+        p1 = "black"
+    elif player == 2:
+        p1 = "bhite"
+    for i in blocks:
+        if i == 3:
+            print("\nTria!", p1, "has made 3 in a row!")
+        elif i == 4:
+            print("\nTessera!", p1, "has made 4 in a row!")
     return win
 
 def check_win_directions(board, point, found, increment, player):
@@ -187,9 +201,9 @@ def check_win_directions(board, point, found, increment, player):
                 negi_check = False
         if count >= 5:
             found = True
-            return found
+            return found, count
         if not posi_check and not negi_check:
-            return found
+            return found, count
         
 def capture_check_direction(board, index, pos_list, status, increment, player, opponent, mode):
     if board[index] == opponent:
