@@ -157,7 +157,7 @@ Runs out of command line (for now)
     
     illegal move - move specified violates the rules of the game
     
-    boardsize must be an integer between 5 and 19 - boardsize specified is not within the correct range
+    boardsize must be an odd integer between 5 and 19 - boardsize specified is not within the correct range
     
     board location syntax incorrect - move specified is not formatted correctly
     
