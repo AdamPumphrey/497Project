@@ -122,6 +122,26 @@ Runs out of command line (for now)
             1. <player> <move>
             2. <player> <move>
             etc...
+    
+    rules - displays ruleset for current game
+    
+        rulesets only effect first player's second move - see "Rules of Pente: for more info
+        
+        usage: rules
+        
+        output:
+        
+            The current ruleset is: <ruleset>
+        
+    changerules - creates a new game with the specified ruleset
+    
+        usage: ruleset
+        
+        output:
+        
+            Enter 1 for Tournament Rules, enter 2 for Casual Rules: <userinput>
+            The current ruleset is: <userinput>
+            Current board: <board>
             
 # Error Messages:
 
@@ -181,8 +201,14 @@ Runs out of command line (for now)
             
     Tournament Rules:
     
-        this program uses tournament rules
+        this program uses tournament rules by default
         
         only difference is that the first player's second move must be at least 3 spaces away from center
+        
+        the option to change rules is available with the 'changerules' command:
+        
+            changing the rules to 'Casual' allows first player to make their second move without tournament restriction
+            
+            the game will reset every time the ruleset is changed using the 'changerules' command
         
 For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
