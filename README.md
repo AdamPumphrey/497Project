@@ -133,13 +133,13 @@ Runs out of command line (for now)
         
             The current ruleset is: <ruleset>
         
-    changerules - creates a new game with the specified ruleset
+    changerules - creates a new game with the specified ruleset, unless command is cancelled
     
         usage: ruleset
         
         output:
         
-            Enter 1 for Tournament Rules, enter 2 for Casual Rules: <userinput>
+            Enter 1 for Tournament Rules, enter 2 for Casual Rules, enter c to cancel: <userinput>
             The current ruleset is: <userinput>
             Current board: <board>
             
@@ -209,6 +209,6 @@ Runs out of command line (for now)
         
             changing the rules to 'Casual' allows first player to make their second move without tournament restriction
             
-            the game will reset every time the ruleset is changed using the 'changerules' command
+            the game will reset every time the ruleset is changed using the 'changerules' command, unless cancelled
         
 For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
