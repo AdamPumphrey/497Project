@@ -11,9 +11,11 @@ Runs out of command line (for now)
   
         usage: boardsize <int>  
         
-            <int> must be between 5 and 19 (5 <= <int> <= 19)  eg) boardsize 7
+            <int> must be odd integer between 7 and 19 (7 <= <int> <= 19)  eg) boardsize 9
             
-            reasoning for 5-19: 5x5 is smallest board possible, 19x19 is the traditional size board
+            reasoning for 7-19: 7x7 is smallest board possible for tournament rules.
+                                19x19 is the traditional size board.
+                                odd integer to ensure that a center point exists
         
         output: Current board: <board>
         
@@ -157,7 +159,7 @@ Runs out of command line (for now)
     
     illegal move - move specified violates the rules of the game
     
-    boardsize must be an odd integer between 5 and 19 - boardsize specified is not within the correct range
+    boardsize must be an odd integer between 7 and 19 - boardsize specified is not within the correct range
     
     board location syntax incorrect - move specified is not formatted correctly
     
