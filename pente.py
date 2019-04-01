@@ -147,9 +147,9 @@ def play_move(move, board, boardsize, player, opponent):
             board[i] = 0
     # check for win
     # need to implement calling 4 in a row (tessera) and 3 in a row (tria)
-    win_status = check_win(board, boardsize, player, point)
+    win_status, blocks = check_win(board, boardsize, player, point)
         
-    return True, capture_status, capture_count, win_status
+    return True, capture_status, capture_count, win_status, blocks
 
 def check_win(board, boardsize, player, point):
     win = False
@@ -169,16 +169,16 @@ def check_win(board, boardsize, player, point):
                 # diagonal up/right, down/left check
                 win, block4 = check_win_directions(board, point, win, (boardsize), player)
                 blocks.append(block4)
-    if player == 1:
-        p1 = "black"
-    elif player == 2:
-        p1 = "bhite"
-    for i in blocks:
-        if i == 3:
-            print("\nTria!", p1, "has made 3 in a row!")
-        elif i == 4:
-            print("\nTessera!", p1, "has made 4 in a row!")
-    return win
+    #if player == 1:
+        #p1 = "black"
+    #elif player == 2:
+        #p1 = "white"
+    #for i in blocks:
+        #if i == 3:
+            #print("\nTria!", p1, "has made 3 in a row!")
+        #elif i == 4:
+            #print("\nTessera!", p1, "has made 4 in a row!")
+    return win, blocks
 
 def check_win_directions(board, point, found, increment, player):
     count = 1
@@ -321,8 +321,8 @@ def generate_random_move(board, boardsize, player, opponent, move_history, rules
         available_moves = get_empty_spaces(board, boardsize)
         random.shuffle(available_moves)
         move = available_moves[0]
-    move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
-    return move_status, capture, capture_count, win, move
+    move_status, capture, capture_count, win, blocks = play_move(move, board, boardsize, player, opponent)
+    return move_status, capture, capture_count, win, move, blocks
 
 def tournament_rule_check(board, boardsize, player, move_history, move):
     #if player == 1 and len(move_history) == 0:
@@ -368,8 +368,7 @@ def display_move(move_status, player, move, board, boardsize):
             p2 = "black"
         print("")
         print(p1, "played", move)
-        show_board(board, boardsize)
-        # implement 4 in a row/3 in a row announcing here
+        #show_board(board, boardsize)
     else:
         print("Move was not played")
 
@@ -456,7 +455,7 @@ def reset_cap_counts():
     return bcc, wcc
 
 def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_history, ruleset):
-    move_status, capture, capture_count, win, move = generate_random_move(board, boardsize, player, opponent, move_history, ruleset)
+    move_status, capture, capture_count, win, move, blocks = generate_random_move(board, boardsize, player, opponent, move_history, ruleset)
     if player == 1:
         p1 = "black"
         p2 = "white"
@@ -464,20 +463,35 @@ def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_
         p1 = "white"
         p2 = "black"
     return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_status, 
-                       capture, capture_count, move, p1, p2, win, move_history)
+                       capture, capture_count, move, p1, p2, win, move_history, blocks)
 
 def format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, 
-                w_win, draw, move_status, capture, capture_count, move, p1, p2, win, move_history):
+                w_win, draw, move_status, capture, capture_count, move, p1, p2, win, move_history, blocks):
     display_move(move_status, player, move, board, boardsize)
+    display_blocks(blocks, player)
     b_cap_count, w_cap_count, b_win, w_win \
         = display_capture(capture, player, b_cap_count, w_cap_count, capture_count, b_win, w_win, p1, p2)
     b_win, w_win, draw, player, opponent \
         = display_win(win, player, b_win, w_win, draw, board, boardsize, move_status, opponent)
     move_history.append((p1[0], move))
+    show_board(board, boardsize)
+    divider = '-'*25
+    print('\n'+divider)
     return board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw
 
+def display_blocks(blocks, player):
+    if player == 1:
+        p1 = "black"
+    elif player == 2:
+        p1 = "white"
+    for i in blocks:
+        if i == 3:
+            print("\nTria!", p1, "has made 3 in a row!")
+        elif i == 4:
+            print("\nTessera!", p1, "has made 4 in a row!")    
+
 def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move, move_history):
-    move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
+    move_status, capture, capture_count, win, blocks = play_move(move, board, boardsize, player, opponent)
     if player == 1:
         p1 = "black"
         p2 = "white"
@@ -485,7 +499,7 @@ def play_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win
         p1 = "white"
         p2 = "black"
     return format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, 
-                       w_win, draw, move_status, capture, capture_count, move, p1, p2, win, move_history)
+                       w_win, draw, move_status, capture, capture_count, move, p1, p2, win, move_history, blocks)
 
 def emptyspaces_cmd(board, boardsize):
     empty_spaces = get_empty_spaces(board, boardsize)
@@ -747,7 +761,7 @@ def main():
                     if arg != "1" and arg != "2" and arg != "c":
                         print("\nError: Incorrect input for command. Consult README for more info")
                         check_ruleset(ruleset)
-                        arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules: ")
+                        arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules, enter c to cancel: ")
                     else:
                         argcheck = True
                 if arg == "c":
