@@ -23,7 +23,7 @@ def show_board(board, boardsize):
     column_list = []
     for x in range(0, (boardsize)):
         column_list.append(chr(97 + x))
-    column_str = '  '
+    column_str = '   '
     for i in column_list:
         column_str += i
         column_str += '  '
@@ -36,10 +36,15 @@ def show_board(board, boardsize):
             row_list.append(str(i))
         row_str = ''
         row_str += str(count)
+        tempcount = 1
         for i in row_list:
-            row_str += ' '
+            if tempcount == 1 and count < 10:
+                row_str += '  '
+            else:
+                row_str += ' '
             row_str += i
-            row_str += ' '        
+            row_str += ' '
+            tempcount += 1
         #print(board[(((boardsize + 1) * count) + 1):((boardsize + 1) * (count + 1))])
         count += 1
         print(row_str)
@@ -100,12 +105,15 @@ def check_inp_command(command, commandlist):
 
 def boardsize_change(new_size):
     if not new_size.isdigit():
-        print("\nError: Boardsize must be an integer between 5 and 19")
+        print("\nError: Boardsize must be an odd integer between 5 and 19")
         return 1
     else:
         new_boardsize = int(new_size)
         if new_boardsize < 5 or new_boardsize > 19:
-            print("\nError: Boardsize must be an integer between 5 and 19")
+            print("\nError: Boardsize must be an odd integer between 5 and 19")
+            return 1
+        elif new_boardsize % 2 == 0:
+            print("\nError: Boardsize must be an odd integer between 5 and 19")
             return 1
         else:
             return new_boardsize
@@ -272,14 +280,17 @@ def check_game_status(black_status, white_status, draw_status):
     else:
         return False
     
-def generate_random_move(board, boardsize, player, opponent, move_history):
-    if player == 1 and len(move_history) == 2:
+def generate_random_move(board, boardsize, player, opponent, move_history, ruleset):
+    if ruleset == 1 and player == 1 and len(move_history) == 0:
+        pos = (len(board) - 1) // 2
+        move = point_to_boardloc(pos, boardsize)
+    elif ruleset == 1 and player == 1 and len(move_history) == 2:
         pass
     else:
         available_moves = get_empty_spaces(board, boardsize)
         random.shuffle(available_moves)
         move = available_moves[0]
-        move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
+    move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
     return move_status, capture, capture_count, win, move
 
 def display_move(move_status, player, move, board, boardsize):
@@ -348,18 +359,20 @@ def display_win(win, player, black_win, white_win, draw, board, boardsize, move_
                     opponent = 2
     return black_win, white_win, draw, player, opponent
 
-def boardsize_cmd(command, board):
+def boardsize_cmd(command, board, boardsize, move_history):
     if len(command) != 2:
-        return board, False
+        print("\nError: Command requires additional input. Consult README for more info")
+        show_board(board, boardsize)
+        return board, boardsize, move_history, False
     else:
         new_boardsize = boardsize_change(command[1])
         if new_boardsize == 1:
-            return board, 99
+            return board, boardsize, move_history, False
         else:
             boardsize = new_boardsize                
             board, move_history = build_board(boardsize)
             show_board(board, boardsize)
-            return board, move_history, True
+            return board, boardsize, move_history, True
 
 def reset_win_status():
     b_win = False
@@ -377,8 +390,8 @@ def reset_cap_counts():
     wcc = 0
     return bcc, wcc
 
-def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_history):
-    move_status, capture, capture_count, win, move = generate_random_move(board, boardsize, player, opponent, move_history)
+def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_history, ruleset):
+    move_status, capture, capture_count, win, move = generate_random_move(board, boardsize, player, opponent, move_history, ruleset)
     if player == 1:
         p1 = "black"
         p2 = "white"
@@ -507,7 +520,7 @@ def main():
                    "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm", "movehistory",
                    "rules", "changerules"]
 
-    boardsize = 5
+    boardsize = 11
     board = [0] * ((boardsize + 1) ** 2)
     
     # build board
@@ -538,16 +551,11 @@ def main():
         elif check_result == 0:
             # execute command
             if command[0] == "boardsize":
-                board, move_history, success = boardsize_cmd(command, board)
-                if not success:
-                    print("\nError: Command requires additional input. Consult README for more info")
-                else:
-                    if success == 99:
-                        show_board(board, boardsize)
-                    else:
-                        player, opponent = reset_players()
-                        black_capture_count, white_capture_count = reset_cap_counts()
-                        black_win, white_win, draw = reset_win_status()                        
+                board, boardsize, move_history, success = boardsize_cmd(command, board, boardsize, move_history)
+                if success:
+                    player, opponent = reset_players()
+                    black_capture_count, white_capture_count = reset_cap_counts()
+                    black_win, white_win, draw = reset_win_status()                        
             elif command[0] == "reset":
                 if len(command) > 1:
                     print("\nError: Command does not require additional input. Consult README for more info")
@@ -571,7 +579,7 @@ def main():
                     board, boardsize, player, opponent, black_cap_count, white_cap_count,\
                     black_win, white_win, draw \
                     = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                  white_capture_count, black_win, white_win, draw, move_history)                  
+                                  white_capture_count, black_win, white_win, draw, move_history, ruleset)                  
             elif command[0] == "play":
                 if len(command) < 2:
                     print("\nError: Command requires additional input. Consult README for more info")
