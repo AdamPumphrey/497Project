@@ -272,11 +272,14 @@ def check_game_status(black_status, white_status, draw_status):
     else:
         return False
     
-def generate_random_move(board, boardsize, player, opponent):
-    available_moves = get_empty_spaces(board, boardsize)
-    random.shuffle(available_moves)
-    move = available_moves[0]
-    move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
+def generate_random_move(board, boardsize, player, opponent, move_history):
+    if player == 1 and len(move_history) == 2:
+        pass
+    else:
+        available_moves = get_empty_spaces(board, boardsize)
+        random.shuffle(available_moves)
+        move = available_moves[0]
+        move_status, capture, capture_count, win = play_move(move, board, boardsize, player, opponent)
     return move_status, capture, capture_count, win, move
 
 def display_move(move_status, player, move, board, boardsize):
@@ -375,7 +378,7 @@ def reset_cap_counts():
     return bcc, wcc
 
 def genmove_cmd(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw, move_history):
-    move_status, capture, capture_count, win, move = generate_random_move(board, boardsize, player, opponent)
+    move_status, capture, capture_count, win, move = generate_random_move(board, boardsize, player, opponent, move_history)
     if player == 1:
         p1 = "black"
         p2 = "white"
@@ -491,11 +494,18 @@ def movehistory_cmd(inp, move_history):
             for move in move_history:
                 print(str(count)+".", move[0].upper(), move[1])
                 count += 1    
+                
+def check_ruleset(ruleset):
+    if ruleset == 1:
+        print("\nThe current ruleset is: Tournament")
+    elif ruleset == 2:
+        print("\nThe current ruleset is: Casual")    
 
 def main():
     
     commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", 
-                   "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm", "movehistory"]
+                   "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm", "movehistory",
+                   "rules", "changerules"]
 
     boardsize = 5
     board = [0] * ((boardsize + 1) ** 2)
@@ -512,6 +522,7 @@ def main():
     
     player = 1
     opponent = 2
+    ruleset = 1
     black_capture_count = 0
     white_capture_count = 0
     black_win = False
@@ -635,6 +646,25 @@ def main():
                                       white_capture_count, black_win, white_win, draw, move_history)
             elif command[0] == "movehistory":
                 movehistory_cmd(command, move_history)
+            elif command[0] == "changerules":
+                arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules: ")
+                argcheck = False
+                while not argcheck:
+                    if arg != "1" and arg != "2":
+                        print("\nError: Incorrect input for command. Consult README for more info")
+                        check_ruleset(ruleset)
+                        arg = input("\nEnter 1 for Tournament Rules, enter 2 for Casual Rules: ")
+                    else:
+                        argcheck = True
+                ruleset = int(arg)
+                check_ruleset(ruleset)
+                player, opponent = reset_players()
+                black_capture_count, white_capture_count = reset_cap_counts()
+                black_win, white_win, draw = reset_win_status()
+                board, move_history = build_board(boardsize)
+                show_board(board, boardsize)
+            elif command[0] == "rules":
+                check_ruleset(ruleset)
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
