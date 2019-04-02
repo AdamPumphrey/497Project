@@ -93,9 +93,9 @@ Runs out of command line (for now)
             
             White has made <int> capture(s)
     
-    playgame - initiates a cpu vs. cpu game of Pente
+    playcpugame - initiates a cpu vs. cpu game of Pente
     
-        usage: playgame
+        usage: playcpugame
         
         output:
         
@@ -144,6 +144,23 @@ Runs out of command line (for now)
             Enter 1 for Tournament Rules, enter 2 for Casual Rules, enter c to cancel: <userinput>
             The current ruleset is: <userinput>
             Current board: <board>
+    
+    startgame - starts a player vs. cpu game with current ruleset and boardsize
+    
+        usage: startgame
+        
+        output:
+        
+            Choose your colour (b for black, w for white, c to cancel): <userinput>
+            if colour chosen is b:
+                Please enter your move, or enter 'quit' to exit: <userinput>
+            if colour chosen is w:
+                black played d4
+                Current board: <board>
+                Please enter your move, or enter 'quit' to exit: <userinput>
+            if c:
+                Game has been cancelled
+                Current board: <board>          
             
 # Error Messages:
 
