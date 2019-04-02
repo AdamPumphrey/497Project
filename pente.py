@@ -477,7 +477,7 @@ def format_move(board, boardsize, player, opponent, b_cap_count, w_cap_count, b_
     show_board(board, boardsize)
     divider = '-'*25
     print('\n'+divider)
-    return board, boardsize, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw
+    return board, player, opponent, b_cap_count, w_cap_count, b_win, w_win, draw
 
 def display_blocks(blocks, player):
     if player == 1:
@@ -596,7 +596,7 @@ def check_ruleset(ruleset):
 def main():
     
     commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", 
-                   "ptm", "winner", "showboard", "capturecounts", "playgame", "changeptm", "movehistory",
+                   "ptm", "winner", "showboard", "capturecounts", "playcpugame", "changeptm", "movehistory",
                    "rules", "changerules"]
 
     boardsize = 7
@@ -655,7 +655,7 @@ def main():
                 elif check_game_status(black_win, white_win, draw):
                     print("\nGame is over. To start a new game, please use the 'reset' command")
                 else:
-                    board, boardsize, player, opponent, black_cap_count, white_cap_count,\
+                    board, player, opponent, black_cap_count, white_cap_count,\
                     black_win, white_win, draw \
                     = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
                                   white_capture_count, black_win, white_win, draw, move_history, ruleset)                  
@@ -674,21 +674,21 @@ def main():
                             print("\nError: Black's first move must be the center point")
                             show_board(board, boardsize)
                         else:
-                            board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                            board, player, opponent, black_capture_count, white_capture_count,\
                                 black_win, white_win, draw \
                                 = play_cmd(board, boardsize, player, opponent, black_capture_count, 
                                            white_capture_count, black_win, white_win, draw, command[1], move_history)                             
                     elif ruleset == 1:
                         check = tournament_rule_check(board, boardsize, player, move_history, command[1])
                         if check:
-                            board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                            board, player, opponent, black_capture_count, white_capture_count,\
                                 black_win, white_win, draw \
                                 = play_cmd(board, boardsize, player, opponent, black_capture_count, 
                                            white_capture_count, black_win, white_win, draw, command[1], move_history)
                         else:
                             show_board(board, boardsize)
                     else:
-                        board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                        board, player, opponent, black_capture_count, white_capture_count,\
                             black_win, white_win, draw \
                             = play_cmd(board, boardsize, player, opponent, black_capture_count, 
                                        white_capture_count, black_win, white_win, draw, command[1], move_history)                        
@@ -740,7 +740,7 @@ def main():
                     print("\nError: Command does not require additional input. Consult README for more info")
                 else:
                     capturecounts_cmd(black_capture_count, white_capture_count)
-            elif command[0] == "playgame":
+            elif command[0] == "playcpugame":
                 if len(command) > 1:
                     print("\nError: Command does not require additional input. Consult README for more info")
                 else:
@@ -748,7 +748,7 @@ def main():
                         print("\nThe game has ended. To start a new game, please use the 'reset' command") 
                     else:
                         while not black_win and not white_win and not draw:
-                            board, boardsize, player, opponent, black_capture_count, white_capture_count,\
+                            board, player, opponent, black_capture_count, white_capture_count,\
                                 black_win, white_win, draw \
                                 = genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
                                       white_capture_count, black_win, white_win, draw, move_history, ruleset)
