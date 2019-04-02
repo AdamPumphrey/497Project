@@ -591,13 +591,108 @@ def check_ruleset(ruleset):
     if ruleset == 1:
         print("\nThe current ruleset is: Tournament")
     elif ruleset == 2:
-        print("\nThe current ruleset is: Casual")    
+        print("\nThe current ruleset is: Casual")
+
+def startgame_cmd(boardsize, ruleset):
+    player, opponent = reset_players()
+    black_capture_count, white_capture_count = reset_cap_counts()
+    black_win, white_win, draw = reset_win_status()
+    board, move_history = build_board(boardsize)
+    show_board(board, boardsize)                
+    arg = input("\nChoose your colour (b for black, w for white, c to cancel): ")
+    argcheck = False
+    while not argcheck:
+        arg = arg.lower()
+        if arg != "b" and arg != "w" and arg != "c":
+            print("\nError: Incorrect input for command. Consult README for more info")
+            arg = input("\nChoose your colour (b for black, w for white, c to cancel): ")
+        else:
+            argcheck = True
+    if arg == "c":
+        print("\nGame has been cancelled")
+        show_board(board, boardsize)
+    elif arg == "b":
+        player = 1
+    elif arg == "w":
+        opponent = 1
+    if opponent == 1:
+        while not black_win and not white_win and not draw:
+            board, player, opponent, black_capture_count, white_capture_count,\
+                black_win, white_win, draw \
+                = genmove_cmd(board, boardsize, 1, 2, black_capture_count, 
+                              white_capture_count, black_win, white_win, draw, move_history, ruleset)
+            if black_win or white_win or draw:
+                break
+            else:
+                move_arg = input("\nPlease enter your move, or enter 'quit' to exit: ")
+                move_arg = move_arg.lower()
+                if move_arg == "quit":
+                    print("\nGame cancelled")
+                    break
+                board, player, opponent, black_capture_count, white_capture_count,\
+                    black_win, white_win, draw \
+                    = play_cmd(board, boardsize, 2, 1, black_capture_count, 
+                               white_capture_count, black_win, white_win, draw, move_arg, move_history)
+    elif player == 1:
+        while not black_win and not white_win and not draw:
+            move_arg = input("\nPlease enter your move, or enter 'quit' to exit: ")
+            move_arg = move_arg.lower()
+            if move_arg == "quit":
+                print("\nGame cancelled")
+                break
+            movecheck = False
+            while not movecheck:
+                if len(move_history) == 0:
+                    pos = (len(board) - 1) // 2
+                    center = point_to_boardloc(pos, boardsize)
+                    if move_arg != center:
+                        print("\nError: Black's first move must be the center point")
+                        show_board(board, boardsize)
+                        move_arg = input("\nPlease enter your move, or enter 'quit' to exit: ")
+                        move_arg = move_arg.lower()
+                        if move_arg == "quit":
+                            print("\nGame cancelled")
+                            break
+                    else:
+                        movecheck = True
+                        board, player, opponent, black_capture_count, white_capture_count,\
+                            black_win, white_win, draw \
+                            = play_cmd(board, boardsize, 1, 2, black_capture_count, 
+                                       white_capture_count, black_win, white_win, draw, move_arg, move_history)                             
+                elif ruleset == 1:
+                    check = tournament_rule_check(board, boardsize, player, move_history, move_arg)
+                    if check:
+                        movecheck = True
+                        board, player, opponent, black_capture_count, white_capture_count,\
+                            black_win, white_win, draw \
+                            = play_cmd(board, boardsize, 1, 2, black_capture_count, 
+                                       white_capture_count, black_win, white_win, draw, move_arg, move_history)
+                    else:
+                        show_board(board, boardsize)
+                        move_arg = input("\nPlease enter your move, or enter 'quit' to exit: ")
+                        move_arg = move_arg.lower()
+                        if move_arg == "quit":
+                            print("\nGame cancelled")
+                            break
+                else:
+                    movecheck = True
+                    board, player, opponent, black_capture_count, white_capture_count,\
+                        black_win, white_win, draw \
+                        = play_cmd(board, boardsize, 1, 2, black_capture_count, 
+                                   white_capture_count, black_win, white_win, draw, move_arg, move_history)
+            if black_win or white_win or draw:
+                break
+            else:
+                board, player, opponent, black_capture_count, white_capture_count,\
+                    black_win, white_win, draw \
+                    = genmove_cmd(board, boardsize, 2, 1, black_capture_count, 
+                                  white_capture_count, black_win, white_win, draw, move_history, ruleset)    
 
 def main():
     
     commandlist = ["boardsize", "reset", "quit", "genmove", "play", "commands", "emptyspaces", 
                    "ptm", "winner", "showboard", "capturecounts", "playcpugame", "changeptm", "movehistory",
-                   "rules", "changerules"]
+                   "rules", "changerules", "startgame"]
 
     boardsize = 7
     board = [0] * ((boardsize + 1) ** 2)
@@ -777,6 +872,8 @@ def main():
                     show_board(board, boardsize)
             elif command[0] == "rules":
                 check_ruleset(ruleset)
+            elif command[0] == "startgame":
+                startgame_cmd(boardsize, ruleset)                           
         user_inp = input("\nPlease enter a command: ")
         
     # point to boardloc
