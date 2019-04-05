@@ -5,6 +5,56 @@ Built with Python 3
 
 Runs out of command line (for now)
 
+# Rules of Pente:
+
+    Win conditions:
+    
+        creating a 5-in-a-row with your stones
+        
+        capturing 5 or more pairs of opponent's stones (5 or more captures)
+        
+        game ends immediately when one of the conditions is met
+        
+    Play:
+    
+        black plays first, must play center point for first move
+        
+        alternating turns
+        
+        stones cannot be moved once placed except for capture
+        
+        if captured, the pair of stones must be removed from the board
+        
+        if a player creates a 3-in-a-row, player must announce "three" or "tria"
+        
+        if a player creates a 4-in-a-row, player must announce "four" or "tessera"
+        
+    Capturing:
+    
+        captures only occur when two (and only two) adjacent stones are flanked by two opposing stones
+        
+            eg) X O O X
+        
+        captures can be made in any direction, and singular move can create multiple captures
+        
+        suicide (putting your own stones in a capture position) does not exist
+        
+            eg) X - O X, O places their stone in the middle, their stones cannot captured by the existing X's --> X O O X
+            
+    Tournament Rules:
+    
+        this program uses tournament rules by default
+        
+        only difference is that the first player's second move must be at least 3 spaces away from center
+        
+        the option to change rules is available with the 'changerules' command:
+        
+            changing the rules to 'Casual' allows first player to make their second move without tournament restriction
+            
+            the game will reset every time the ruleset is changed using the 'changerules' command, unless cancelled
+        
+For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
+
 # Commands:
 
     boardsize - resets game and creates new board with specified boardsize
@@ -160,7 +210,32 @@ Runs out of command line (for now)
                 Please enter your move, or enter 'quit' to exit: <userinput>
             if c:
                 Game has been cancelled
-                Current board: <board>          
+                Current board: <board>
+    
+    poseval - evaluates the current board position for the player-to-move
+    
+        usage: poseval
+        
+        output:
+        
+            if initial move:
+                black must play d4 to start the game
+            if black's second move w/ tournament rules enabled:
+                black must play one of the following spaces as per tournament rules: <moves>
+            if winning moves exist for player:
+                winning moves for <player> are: <moves>
+            if opponent has 2 or more winning moves:
+                a <player> loss is inevitable. blocking moves would be: <moves>
+            if opponent has 1 winning move:
+                move that will prevent a <player> loss is <move>
+            if player can create an open four:
+                <player> can make an open four with <moves>
+            if opponent can create an open four:
+                <player> can block an open four with: <moves>
+            if no heuristic-detected moves exist:
+                there are no specific moves to play at this time
+            
+        for more information on the heuristic used in the evaluation, see the Heuristic section of the README
             
 # Error Messages:
 
@@ -182,52 +257,61 @@ Runs out of command line (for now)
     
     board location out of bounds - move specified is off of the board
 
-# Rules of Pente:
+# Heuristic
 
-    Win conditions:
+    This program uses a simple heuristic to evaluate positions on the board. 
     
-        creating a 5-in-a-row with your stones
-        
-        capturing 5 or more pairs of opponent's stones (5 or more captures)
-        
-        game ends immediately when one of the conditions is met
-        
-    Play:
+    The heuristic works by checking for different moves based on varying priorities.
     
-        black plays first, must play center point for first move
-        
-        alternating turns
-        
-        stones cannot be moved once placed except for capture
-        
-        if captured, the pair of stones must be removed from the board
-        
-        if a player creates a 3-in-a-row, player must announce "three" or "tria"
-        
-        if a player creates a 4-in-a-row, player must announce "four" or "tessera"
-        
-    Capturing:
+    Jargon:
     
-        captures only occur when two (and only two) adjacent stones are flanked by two opposing stones
-        
-            eg) X O O X
-        
-        captures can be made in any direction, and singular move can create multiple captures
-        
-        suicide (putting your own stones in a capture position) does not exist
-        
-            eg) X - O X, O places their stone in the middle, their stones cannot captured by the existing X's --> X O O X
+        "open four" - a winning position for the player eg) - O O O O - 
             
-    Tournament Rules:
+            the opponent cannot block a win here, as O has two moves that result in 5-in-a-row. 
+            if a player creates an "open four", that player is guaranteed to win.
     
-        this program uses tournament rules by default
-        
-        only difference is that the first player's second move must be at least 3 spaces away from center
-        
-        the option to change rules is available with the 'changerules' command:
-        
-            changing the rules to 'Casual' allows first player to make their second move without tournament restriction
+    Priorities:
+    
+        1. winning moves
             
-            the game will reset every time the ruleset is changed using the 'changerules' command, unless cancelled
+            if the current player has a winning move available, the player should play that move
         
-For more information about Pente, please consult https://www.pente.net/instructions.html or https://en.wikipedia.org/wiki/Pente
+        2. blocking opponent winning moves
+        
+            if the current player cannot immediately win, and can block an opponent win, the player should block the 
+            opponent win
+        
+        3. creating an "open four"
+            
+            if neither player has any winning moves available, and the current player can create an "open four", 
+            the current player should create an "open four"
+            
+        4. block an "open four"
+        
+            if neither player has any winning moves available, the current player cannot create an "open four", 
+            and the current player can prevent the opponent from creating an "open four", the current player should
+            prevent the creation of an opponent "open four"
+            
+        5. random move
+        
+            if no specific moves are detected by the heuristic, it will default to a random move
+            
+    The heuristic can be improved by adding further priorities.
+    
+    The following priorities (in the following order) could be inserted in between priority 4 and priority 5 above:
+        
+        1. creating an "open three" (similar to "open fours", just one move away from being an "open four")
+            eg) - O O O - 
+                O can create an "open four" if the "open three" is left unchecked
+        
+        2. blocking an "open three"
+        
+        3. creating an "open two" (again, similar to "open threes", just one move away from being an "open three")
+            eg) - O O -
+                as the game progresses, the likelihood of this priority being reached decreases.
+                more stones on the board, higher chances for wins, blocking wins, "open three/four", 
+                lower chance for "open two".
+            I consider this priority to be the worst overall, but still better than simply playing a random move, 
+            as it is at least working towards a winning position
+            
+        The three priorities listed above are not implemented in the program (yet).
