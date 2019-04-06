@@ -1,10 +1,10 @@
-# Pente.py
+# pente.py
 
 Only function is main( ), but split up by command.
 
 For descriptions of commands, see README.
 
-Variables will only be listed under commands if they are local to that command section of main
+Variables in this section will only be listed under commands if they are local to that command section of main
 eg) player variable is not local to 'reset' command (initialized in main), not listed under 'reset'
 eg) success variable is local to 'boardsize' command (initialized in boardsize), listed under 'boardsize'
 
@@ -100,4 +100,83 @@ Commands:
         
     playcpugame:
     
-        if 
+        resets board and info, asks user to choose player for black - Random player or Heuristic player.
+        if input is valid, asks user to choose player for white - Random player or Heuristic player.
+        if input is valid, four cases:
+            1. black and white are using random player
+                while game is ongoing, both black and white use commands.genmove_cmd to generate and play random moves
+            2. black uses heuristic, white plays random
+                while game is ongoing, black obtains its move using commands.current_position_evaluation, and plays the move
+                using commands.play_cmd.
+                white generates and plays its move using commands.genmove_cmd
+            3. black plays random, white uses heuristic
+                while game is ongoing, black generates and plays its move using commands.genmove_cmd.
+                white obtains its move using commands.current_position_evaluation, and plays the move using
+                commands.play_cmd
+            4. black and white are using heuristic
+                while game is ongoing, black and white obtain their moves using commands.current_position_evaluation,
+                and plays their moves using commands.play_cmd
+                
+        Variables:
+            inp1 (str): user-entered choice of player for black
+            inp1check (bool): True if input entered for inp1 is valid, False if not
+            inp2 (str): user-entered choice of player for white
+            inp2check (bool): True if input entered for inp1 is valid, False if not
+    
+    movehistory:
+        
+        uses commands.movehistory_cmd to display move history of current game
+        
+    changerules:
+    
+        changes value of ruleset depending on user input, then resets board and info
+        depending on user input, three cases:
+            1. user enters 1
+                ruleset is changed to Tournament Rules
+            2. user enters 2
+                ruleset is changed to Casual Rules
+            3. user enters c
+                ruleset change is cancelled, nothing is reset
+        
+        Variables:
+            arg (str): user-entered choice of ruleset to use
+            argcheck (bool): True if input entered for arg is valid, False if not
+            
+    rules:
+    
+        uses utility.check_ruleset to display current ruleset in use
+        
+    startgame:
+    
+        uses commands.startgame_cmd to initiate a player vs. cpu game
+        
+    poseval:
+    
+        if game is ongoing, uses commands.current_position_evaluation to evaluate current board position for
+        player-to-move
+        
+# commands.py
+
+boardsize_cmd:
+
+    input:
+        command (tuple): command entered by user, in form of ('boardsize', <int>)
+        board (int array): current board in use
+        boardsize (int): current boardsize
+        move_history (tuple array): history of moves for current game
+        
+    variables:
+        new_boardsize (int): two cases:
+            1. boardsize entered by user is valid
+                new_boardsize contains that value
+            2. boardsize entered by user is invalid
+                new_boardsize contains 1
+                
+    1. checks to see if input entered by user is valid (contains two values - ['boardsize', <int>]
+        a. if input is invalid, uses utility.show_board to display current board, does not change anything,
+           returns old board, boardsize, move_history, False (boardsize change did not occur)
+        b. if input is valid, moves to step 2
+    2. uses utility.boardsize_change to change boardsize
+        a. if return value from utility.boardsize_change is 1, change did not occur,
+           returns old board, boardsize, move_history, False
+        b.
