@@ -447,7 +447,6 @@ def current_position_evaluation(player, opponent, board, boardsize, move_history
         center = (len(board) - 1) // 2
         center = u.point_to_boardloc(center, boardsize)
         center_ord = ord(center[0])
-        
         legal_moves = []
         # for every empty space
         for move in available_moves:
@@ -491,69 +490,118 @@ def current_position_evaluation(player, opponent, board, boardsize, move_history
             return move
     
     else:
+        # get board location of most recent move
         last_move = move_history[-1]
         last_move_index = u.boardloc_to_point(last_move[1], boardsize)
+        # get player's move history
         player_move_history = heur.parse_move_history(player, move_history)
+        # check for winning moves
         win_moves = heur.win_heuristic(player_move_history, board, player, opponent, boardsize)
+        
+        # if any winning moves exist
         if win_moves:
+            
+            # if display mode
             if mode == 0:
+                # display winning moves
                 print("\nwinning moves for", playercolour, "are: ", end='')
                 for move in win_moves:
                     move = move + ' '
                     print(move, end='')
                 print('')
+                
             else:
+                # randomly pick winning move to play
                 random.shuffle(win_moves)
                 move = win_moves[0]
                 return move
+        
+        # if no winning moves exist
         else:
+            # check for opponent winning moves to block
             def_moves = heur.def_heuristic(board, player, opponent, last_move_index, boardsize)
+            
+            # if blocking moves exist
             if def_moves:
+                
+                # if display mode
                 if mode == 0:
+                    
+                    # display blocking moves
+                    
+                    # if more than one blocking move exists
                     if len(def_moves) > 1:
-                        print("\na", playercolour, "loss is inevitable. blocking moves would be: ", end='')
+                        print("\na", playercolour, "with proper play, loss is inevitable. blocking moves would be: ", end='')
                     else:
                         print("\nmove that will prevent a", playercolour, "loss is: ", end='')
                     for move in def_moves:
                         move = move + ' '
                         print(move, end='')
                     print('')
+                    
                 else:
+                    # randomly pick blocking move to play
                     random.shuffle(def_moves)
                     move = def_moves[0]
                     return move
+                
+            # if no blocking moves exist
             else:
+                # check for moves that create open fours
                 four_moves = heur.win_heuristic(player_move_history, board, player, opponent, boardsize, 4)
+                
+                # if open four moves exist
                 if four_moves:
+                    
+                    # if display mode
                     if mode == 0:
+                        # display open four moves
                         print('')
                         print(playercolour, "can make an open four with: ", end='')
                         for move in four_moves:
                             move = move + ' '
                             print(move, end='')
                         print('')
+                        
                     else:
+                        # randomly pick open four move to play
                         random.shuffle(four_moves)
                         move = four_moves[0]
                         return move
+                    
+                # if no open four moves exist
                 else:
+                    # check for moves that block opponent open fours
                     def_moves = heur.def_heuristic(board, player, opponent, last_move_index, boardsize, 4)
+                    
+                    # if moves that block opponent open fours exist
                     if def_moves:
+                        
+                        # if display mode
                         if mode == 0:
+                            # display blocking moves
                             print('')
                             print(playercolour, "can block an open four with: ", end='')
                             for move in def_moves:
                                 move = move + ' '
                                 print(move, end='')
                             print('')
+                            
                         else:
+                            # randomly pick blocking move to play
                             random.shuffle(def_moves)
                             move = def_moves[0]
                             return move
+                        
+                    # if no heuristic-determined moves exist 
                     else:
+                        
+                        # if display mode
                         if mode == 0:
                             print("\nthere are no specific moves to play at this time")
+                        
                         else:
+                            # randomly pick legal move to play
                             legal_moves = u.get_empty_spaces(board, boardsize)
                             random.shuffle(legal_moves)
                             move = legal_moves[0]
