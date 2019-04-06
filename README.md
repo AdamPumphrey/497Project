@@ -1,5 +1,5 @@
 # 497Project
-UAlberta CMPUT 497 Project - Pente Random Player
+UAlberta CMPUT 497 Project - Pente Random/Heuristic Player
 
 Built with Python 3
 
@@ -120,9 +120,7 @@ For more information about Pente, please consult https://www.pente.net/instructi
         output:
         
             if a player has won: <player> is the winner!
-            
             if the game is a draw: The game is a draw
-            
             if the game is still in progress: Game is still ongoing
     
     showboard - displays the current board
@@ -138,9 +136,7 @@ For more information about Pente, please consult https://www.pente.net/instructi
         output: 
         
             5 or more captures are needed for a capture win
-            
             Black has made <int> capture(s)
-            
             White has made <int> capture(s)
     
     playcpugame - initiates a cpu vs. cpu game of Pente
@@ -149,8 +145,9 @@ For more information about Pente, please consult https://www.pente.net/instructi
         
         output:
         
+            Choose the player for black. 1 for Random, 2 for Heuristic: <userinput>
+            Choose the player for white. 1 for Random, 2 for Heuristic: <userinput>
             <player> played <move>
-            
             Current board: <board>
             
     changeptm - changes the current player-to-move
@@ -202,6 +199,7 @@ For more information about Pente, please consult https://www.pente.net/instructi
         output:
         
             Choose your colour (b for black, w for white, c to cancel): <userinput>
+            Choose the player for your opponent. 1 for Random, 2 for Heuristic: <userinput>
             if colour chosen is b:
                 Please enter your move, or enter 'quit' to exit: <userinput>
             if colour chosen is w:
@@ -262,6 +260,8 @@ For more information about Pente, please consult https://www.pente.net/instructi
     This program uses a simple heuristic to evaluate positions on the board. 
     
     The heuristic works by checking for different moves based on varying priorities.
+    
+    The heuristic does not consider capturing as part of the evaluation.
     
     Jargon:
     
