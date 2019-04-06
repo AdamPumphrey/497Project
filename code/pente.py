@@ -39,10 +39,9 @@ def main():
     while user_inp:
         command = user_inp.split(" ")
         check_result = u.check_inp_command(command, commandlist)
-        if check_result == 1:
-            error = True
+        if not check_result:
             print("\nError: Command does not exist. Use 'commands' to list existing commands")
-        elif check_result == 0:
+        elif check_result:
             # execute command
             if command[0] == "boardsize":
                 board, boardsize, move_history, success = com.boardsize_cmd(command, board, boardsize, move_history)

@@ -82,13 +82,13 @@ def boardloc_to_point(boardloc, boardsize):
 
 def check_inp_command(command, commandlist):
     if not command[0].isalpha():
-        return 1
+        return False
     else:
         command[0] = command[0].lower()
     if command[0] not in commandlist:
-        return 1
+        return False
     else:
-        return 0
+        return True
 
 def boardsize_change(new_size):
     if not new_size.isdigit():
