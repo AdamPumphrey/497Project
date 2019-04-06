@@ -158,69 +158,70 @@ def main():
                 if len(command) > 1:
                     print("\nError: Command does not require additional input. Consult README for more info")
                 else:
-                    if u.check_game_status(black_win, white_win, draw):
-                        print("\nThe game has ended. To start a new game, please use the 'reset' command") 
-                    else:
-                        player, opponent = u.reset_players()
-                        inp1 = input("Choose the player for black. 1 for Random, 2 for Heuristic: ")
-                        inp1check = False
-                        while not inp1check:
-                            if inp1 != "1" and inp1 != "2":
-                                print("\nError: Incorrect input for command. Consult README for more info")
-                                inp1 = input("Choose the player for black. 1 for Random, 2 for Heuristic: ")
-                            else:
-                                inp1check = True
-                        inp2 = input("Choose the player for white. 1 for Random, 2 for Heuristic: ")
-                        inp2check = False
-                        while not inp2check:
-                            if inp2 != "1" and inp2 != "2":
-                                print("\nError: Incorrect input for command. Consult README for more info")
-                                inp2 = input("Choose the player for white. 1 for Random, 2 for Heuristic: ")
-                            else:
-                                inp2check = True
-                        if inp1 == "1" and inp2 == "1":
-                            while not black_win and not white_win and not draw:
+                    player, opponent = u.reset_players()
+                    black_capture_count, white_capture_count = u.reset_cap_counts()
+                    black_win, white_win, draw = u.reset_win_status()
+                    board, move_history = u.build_board(boardsize)
+                    u.show_board(board, boardsize)
+                    inp1 = input("Choose the player for black. 1 for Random, 2 for Heuristic: ")
+                    inp1check = False
+                    while not inp1check:
+                        if inp1 != "1" and inp1 != "2":
+                            print("\nError: Incorrect input for command. Consult README for more info")
+                            inp1 = input("Choose the player for black. 1 for Random, 2 for Heuristic: ")
+                        else:
+                            inp1check = True
+                    inp2 = input("Choose the player for white. 1 for Random, 2 for Heuristic: ")
+                    inp2check = False
+                    while not inp2check:
+                        if inp2 != "1" and inp2 != "2":
+                            print("\nError: Incorrect input for command. Consult README for more info")
+                            inp2 = input("Choose the player for white. 1 for Random, 2 for Heuristic: ")
+                        else:
+                            inp2check = True
+                    if inp1 == "1" and inp2 == "1":
+                        while not black_win and not white_win and not draw:
+                            board, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = com.genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                      white_capture_count, black_win, white_win, draw, move_history, ruleset)
+                    elif inp1 == "2" and inp2 == "1":
+                        while not black_win and not white_win and not draw:
+                            black_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
+                            board, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = com.play_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                           white_capture_count, black_win, white_win, draw, black_move, move_history)
+                            if not black_win and not white_win and not draw:
                                 board, player, opponent, black_capture_count, white_capture_count,\
                                     black_win, white_win, draw \
                                     = com.genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
                                           white_capture_count, black_win, white_win, draw, move_history, ruleset)
-                        elif inp1 == "2" and inp2 == "1":
-                            while not black_win and not white_win and not draw:
-                                black_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
+                    elif inp1 == "1" and inp2 == "2":
+                        while not black_win and not white_win and not draw:
+                            board, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = com.genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                      white_capture_count, black_win, white_win, draw, move_history, ruleset)
+                            if not black_win and not white_win and not draw:
+                                white_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
                                 board, player, opponent, black_capture_count, white_capture_count,\
                                     black_win, white_win, draw \
                                     = com.play_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                               white_capture_count, black_win, white_win, draw, black_move, move_history)
-                                if not black_win and not white_win and not draw:
-                                    board, player, opponent, black_capture_count, white_capture_count,\
-                                        black_win, white_win, draw \
-                                        = com.genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                              white_capture_count, black_win, white_win, draw, move_history, ruleset)
-                        elif inp1 == "1" and inp2 == "2":
-                            while not black_win and not white_win and not draw:
-                                board, player, opponent, black_capture_count, white_capture_count,\
-                                    black_win, white_win, draw \
-                                    = com.genmove_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                          white_capture_count, black_win, white_win, draw, move_history, ruleset)
-                                if not black_win and not white_win and not draw:
-                                    white_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
-                                    board, player, opponent, black_capture_count, white_capture_count,\
-                                        black_win, white_win, draw \
-                                        = com.play_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                                   white_capture_count, black_win, white_win, draw, white_move, move_history)
-                        elif inp1 == "2" and inp2 == "2":
-                            while not black_win and not white_win and not draw:
-                                black_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
+                                               white_capture_count, black_win, white_win, draw, white_move, move_history)
+                    elif inp1 == "2" and inp2 == "2":
+                        while not black_win and not white_win and not draw:
+                            black_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
+                            board, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = com.play_cmd(board, boardsize, player, opponent, black_capture_count, 
+                                           white_capture_count, black_win, white_win, draw, black_move, move_history)   
+                            if not black_win and not white_win and not draw:
+                                white_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
                                 board, player, opponent, black_capture_count, white_capture_count,\
                                     black_win, white_win, draw \
                                     = com.play_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                               white_capture_count, black_win, white_win, draw, black_move, move_history)   
-                                if not black_win and not white_win and not draw:
-                                    white_move = com.current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset, 1)
-                                    board, player, opponent, black_capture_count, white_capture_count,\
-                                        black_win, white_win, draw \
-                                        = com.play_cmd(board, boardsize, player, opponent, black_capture_count, 
-                                                   white_capture_count, black_win, white_win, draw, white_move, move_history)                                
+                                               white_capture_count, black_win, white_win, draw, white_move, move_history)                                
             elif command[0] == "movehistory":
                 com.movehistory_cmd(command, move_history)
             elif command[0] == "changerules":
