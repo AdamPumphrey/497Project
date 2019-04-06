@@ -162,7 +162,7 @@ def main():
                     if u.check_game_status(black_win, white_win, draw):
                         print("\nThe game has ended. To start a new game, please use the 'reset' command") 
                     else:
-                        player, opponent = u.reset_players
+                        player, opponent = u.reset_players()
                         inp1 = input("Choose the player for black. 1 for Random, 2 for Heuristic: ")
                         inp1check = False
                         while not inp1check:
