@@ -617,12 +617,12 @@ def startgame_cmd(boardsize, ruleset):
         player = 1
     elif arg == "w":
         opponent = 1
-    arg2 = input("\nChoose the player for your opponent. 1 for Random, 2 for Heuristic")
+    arg2 = input("\nChoose the player for your opponent. 1 for Random, 2 for Heuristic: ")
     argcheck2 = False
     while not argcheck2:
         if arg2 != "1" and arg2 != "2":
             print("\nError: Incorrect input for command. Consult README for more info")
-            arg2 = input("\nChose the player for your opponent. 1 for Random, 2 for Heuristic")
+            arg2 = input("\nChose the player for your opponent. 1 for Random, 2 for Heuristic: ")
         else:
             argcheck2 = True
     if opponent == 1:
