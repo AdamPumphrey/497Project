@@ -279,22 +279,6 @@ def get_line(board, opponent, player, last_move_index, offset, diag_search=False
                     play_locations.append(end_block1)
                 if (block_count + stone_count2) > 2:
                     play_locations.append(end_block2)                
-    
-    #if block_count == 3 and (p_stone1_sp or p_stone2_sp) and not (p_stone1_sp and p_stone2_sp):
-        #if diag_search:
-            #if p_stone1_sp:
-                #newblock = end_block2 - offset - 1
-                #play_locations.append(newblock)
-            #elif p_stone2_sp:
-                #newblock = end_block1 + offset + 1
-                #play_locations.append(newblock)
-        #else:
-            #if p_stone1_sp:
-                #newblock = end_block2 - offset
-                #play_locations.append(newblock)
-            #elif p_stone2_sp:
-                #newblock = end_block1 + offset
-                #play_locations.append(newblock)
 
     if (block_count + stone_count1) > 2 and (block_count + stone_count2) > 2:
         if stone_count1 != 0 and stone_count2 != 0:
