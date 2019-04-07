@@ -288,7 +288,7 @@ def startgame_cmd(boardsize, ruleset):
             
             else:
                 # user enters move they want to play
-                move_arg = input("\nPlease enter your move, or enter 'quit' to exit: ")
+                move_arg = input("\nPlease enter your move, enter 'poseval' to evaluate the position, or enter 'quit' to exit: ")
                 move_arg = move_arg.lower()
                 
                 # if user wants to exit
@@ -296,12 +296,29 @@ def startgame_cmd(boardsize, ruleset):
                     print("\nGame cancelled")
                     # exit game
                     break
-                # else
-                # play specified move
-                board, player, opponent, black_capture_count, white_capture_count,\
-                    black_win, white_win, draw \
-                    = play_cmd(board, boardsize, 2, 1, black_capture_count, 
-                               white_capture_count, black_win, white_win, draw, move_arg, move_history)
+                else:
+                    moveargcheck = False
+                    while not moveargcheck:
+                        
+                        if move_arg == "poseval":
+                            current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset)
+                            move_arg = input("\nPlease enter your move, enter 'poseval' to evaluate the position, or enter 'quit' to exit: ")
+                            move_arg = move_arg.lower()
+                            
+                        elif move_arg == "quit":
+                            print("\nGame cancelled")
+                            moveargcheck = 69
+                            
+                        else:
+                            # else
+                            # play specified move
+                            moveargcheck = True
+                            board, player, opponent, black_capture_count, white_capture_count,\
+                                black_win, white_win, draw \
+                                = play_cmd(board, boardsize, 2, 1, black_capture_count, 
+                                           white_capture_count, black_win, white_win, draw, move_arg, move_history)
+                    if moveargcheck == 69:
+                        break
                 
     # if user playing black
     elif player == 1:
@@ -323,8 +340,18 @@ def startgame_cmd(boardsize, ruleset):
             # while input not validated
             while not movecheck:
                 
+                if move_arg == "poseval":
+                    current_position_evaluation(player, opponent, board, boardsize, move_history, ruleset)
+                    move_arg = input("\nPlease enter your move, enter 'poseval' to evaluate the position, or enter 'quit' to exit: ")
+                    move_arg = move_arg.lower()
+                
+                elif move_arg == "quit":
+                    print("\nGame cancelled")
+                    # exit game
+                    movecheck = 69                    
+                
                 # if no moves have been made
-                if len(move_history) == 0:
+                elif len(move_history) == 0:
                     # get center point
                     pos = (len(board) - 1) // 2
                     center = u.point_to_boardloc(pos, boardsize)
@@ -342,7 +369,7 @@ def startgame_cmd(boardsize, ruleset):
                         if move_arg == "quit":
                             print("\nGame cancelled")
                             # exit game
-                            break
+                            movecheck = 69
                         
                     else:
                         # input validated
@@ -379,7 +406,7 @@ def startgame_cmd(boardsize, ruleset):
                         if move_arg == "quit":
                             print("\nGame cancelled")
                             # exit game
-                            break
+                            movecheck = 69
                         
                 else:
                     # input validated
@@ -389,6 +416,10 @@ def startgame_cmd(boardsize, ruleset):
                         black_win, white_win, draw \
                         = play_cmd(board, boardsize, 1, 2, black_capture_count, 
                                    white_capture_count, black_win, white_win, draw, move_arg, move_history)
+                
+            if movecheck == 69:
+                # exit game
+                break
             
             # if black's move ended the game
             if black_win or white_win or draw:
