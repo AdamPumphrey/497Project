@@ -78,6 +78,18 @@ For more information about Pente, please consult https://www.pente.net/instructi
         usage: reset
         
         output: Current board: <board>
+        
+        note - reset changes the following variables back to their default values:
+        
+            player
+            opponent
+            black_capture_count
+            white_capture_count
+            board
+            move_history
+            
+        therefore, the ruleset is NOT reset when this function is used.
+        use the changerules function to change the rules if need be
    
     quit - exits the program
     
