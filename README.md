@@ -217,14 +217,19 @@ For more information about Pente, please consult https://www.pente.net/instructi
             Choose your colour (b for black, w for white, c to cancel): <userinput>
             Choose the player for your opponent. 1 for Random, 2 for Heuristic: <userinput>
             if colour chosen is b:
-                Please enter your move, or enter 'quit' to exit: <userinput>
+                Please enter your move, enter 'poseval' to evaluate the position, or enter 'quit' to exit: <userinput>
             if colour chosen is w:
                 black played d4
                 Current board: <board>
-                Please enter your move, or enter 'quit' to exit: <userinput>
+                Please enter your move, enter 'poseval' to evaluate the position, or enter 'quit' to exit: <userinput>
             if c:
                 Game has been cancelled
                 Current board: <board>
+                
+        note - using poseval while in a game invokes the same heuristic used by the heuristic player.
+            the poseval command is not a solver, and will not necessarily identify the best available move(s).
+            however, it will identify the move(s) the cpu would consider/play if it were playing in your 
+            place using the heuristic
     
     poseval - evaluates the current board position for the player-to-move
     
