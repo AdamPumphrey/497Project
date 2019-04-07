@@ -5,8 +5,9 @@ Built with Python 3
 
 Runs out of command line (for now)
 
-File to run is pente.py. 
-Other files (utility.py, commands.py, heuristic.py) contain code relevant to their filename.
+Easiest way to setup is to download ZIP of repository.
+File to run is pente.py inside of code folder.
+Other files (utility.py, commands.py, heuristic.py) contain code/functions relevant to their filename.
 
 # Rules of Pente:
 
