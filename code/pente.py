@@ -1,5 +1,5 @@
 ''' 
-Adam Pumphrey, CMPUT 497, ID: 1469319 
+Adam Pumphrey, CMPUT 497, ID: XXXXXXX
 
 Random Pente Player
 '''
